@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Ones Challenge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="print.css" media="print">
+</head>
+<body>
+    <header>
+        <h1>Hot Ones Challenge</h1>
+    </header>
+
+    <div id="language-selector">
+        <button id="btn-en" class="lang-btn active">English</button>
+        <button id="btn-it" class="lang-btn">Italiano</button>
+        <button id="btn-fr" class="lang-btn">Français</button>
+    </div>
+
+    <div class="card-container">
+        <div class="card">
+            <div class="card-face card-front">
+                <i id="card-category-icon" class="fas fa-question-circle fa-3x"></i>
+                <p id="card-category-text">Category</p>
+            </div>
+            <div class="card-face card-back">
+                <p id="card-detail-text">Actual question or dare</p>
+                <i class="fas fa-pepper-hot"></i> <!-- Styling is in style.css -->
+            </div>
+        </div>
+    </div>
+
+    <button id="draw-card-btn">Draw New Card</button>
+
+    <section id="add-card-section">
+        <h2>Add Your Own Card</h2>
+        <form id="add-card-form">
+            <div>
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="question">Question</option>
+                    <option value="dare">Dare</option>
+                    <option value="punishment">Punishment</option>
+                </select>
+            </div>
+            <div>
+                <label for="text_en">English Text:</label>
+                <textarea id="text_en" name="text_en" rows="3" required></textarea>
+            </div>
+            <div>
+                <label for="text_it">Italian Text:</label>
+                <textarea id="text_it" name="text_it" rows="3" required></textarea>
+            </div>
+            <div>
+                <label for="text_fr">French Text:</label>
+                <textarea id="text_fr" name="text_fr" rows="3" required></textarea>
+            </div>
+            <button type="submit">Add Card</button>
+        </form>
+    </section>
+
+    <script src="card-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

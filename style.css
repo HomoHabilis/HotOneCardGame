@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@400;700&display=swap');
+
+/* Basic Body Styling */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #222; /* Dark gray background */
+    color: #fff; /* White text */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+/* Header Styling */
+header {
+    padding: 20px;
+    width: 100%;
+    background-color: #111; /* Slightly darker header background */
+}
+
+header h1 {
+    font-family: 'Lilita One', cursive;
+    font-size: 3em;
+    color: #ff4500; /* Fiery orange-red */
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Language Selector Styling */
+#language-selector { /* ID updated from #language-selection */
+    margin: 20px 0;
+}
+
+#language-selector .lang-btn { /* Class selector for buttons */
+    font-family: 'Montserrat', sans-serif;
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#language-selector .lang-btn:hover {
+    background-color: #e03e00; /* Darker shade for hover */
+}
+
+#language-selector .lang-btn.active {
+    background-color: #ff6347; /* Lighter orange-red for active */
+    box-shadow: 0 0 10px #ff6347;
+    font-weight: bold;
+}
+
+
+/* Card Container Styling */
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Allows container to take up available space */
+    padding: 20px;
+}
+
+/* Card Styling */
+.card {
+    width: 280px; /* Slightly wider for better text fit */
+    height: 400px; /* Slightly taller */
+    perspective: 1000px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth flip */
+    cursor: pointer;
+}
+
+/* Card Face Styling (Common for Front and Back) */
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px; /* Rounded corners for cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in width/height */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Card Front Styling */
+.card-front {
+    background: linear-gradient(135deg, #ff4500, #ff6347); /* Fiery red gradient */
+    color: white;
+}
+
+.card-front p {
+    font-family: 'Lilita One', cursive;
+    font-size: 1.8em; /* Larger category text */
+    margin-top: 10px; /* Add space between icon and text */
+}
+
+.card-front i {
+    color: #fff; /* Ensure icon color matches text, or choose a specific one */
+    /* Optional: Add more specific styling if needed, e.g., text-shadow */
+}
+
+/* Card Back Styling */
+.card-back {
+    background: linear-gradient(135deg, #ffa500, #ffcc00); /* Lighter orange/yellow gradient */
+    color: #333; /* Darker text for better contrast on lighter background */
+    transform: rotateY(180deg);
+}
+
+/* Add New Card Form Styling */
+#add-card-section {
+    background-color: #333; /* Slightly lighter than body background */
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px; /* Max width for the form */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#add-card-section h2 {
+    font-family: 'Lilita One', cursive;
+    color: #ff6347; /* Orange-red, similar to active language button */
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#add-card-form div {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column; /* Stack label and input */
+}
+
+#add-card-form label {
+    font-family: 'Montserrat', sans-serif;
+    color: #eee; /* Light gray for labels */
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+#add-card-form select,
+#add-card-form textarea {
+    font-family: 'Montserrat', sans-serif;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #444; /* Darker input background */
+    color: #fff; /* White text in input */
+    width: 100%; /* Full width within its container */
+    box-sizing: border-box;
+}
+
+#add-card-form select {
+    appearance: none; /* For custom arrow later if desired */
+}
+
+#add-card-form textarea {
+    resize: vertical; /* Allow vertical resize */
+    min-height: 60px;
+}
+
+#add-card-form button[type="submit"] {
+    font-family: 'Lilita One', cursive;
+    background-color: #28a745; /* Green for 'Add' action */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    width: 100%; /* Full width */
+}
+
+#add-card-form button[type="submit"]:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+#add-card-form button[type="submit"]:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+.card-back i.fa-pepper-hot { /* Style for the pepper icon on the back */
+    position: absolute;
+    bottom: 15px; /* Adjusted positioning */
+    right: 15px;  /* Adjusted positioning */
+    opacity: 0.6; /* Slightly more subtle */
+    font-size: 1.2em; /* fa-sm was a bit too small, making it a bit larger */
+    color: #c0392b; /* Darker red for the pepper, could also inherit or be white */
+}
+
+/* Draw Card Button Styling */
+#draw-card-btn {
+    font-family: 'Lilita One', cursive;
+    background-color: #1E90FF; /* Dodger blue */
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    margin: 20px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+#draw-card-btn:hover {
+    background-color: #1C86EE; /* Slightly darker blue */
+}
+
+#draw-card-btn:active {
+    transform: translateY(2px); /* Simple press effect */
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+.card-back p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em; /* Readable question text */
+    line-height: 1.6;
+}
+
+
+/* Flipped Card State */
+.card.is-flipped {
+    transform: rotateY(180deg);
+}

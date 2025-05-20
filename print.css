@@ -1,0 +1,96 @@
+/* General Print Setup */
+@page {
+  size: A4;
+  margin: 1cm;
+}
+
+body {
+  background-color: white !important; /* Ensure a white background for printing */
+  color: black !important; /* Default text to black for print */
+  font-family: 'Montserrat', sans-serif; /* Ensure base font is set */
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide Non-Printable Elements */
+header,
+#language-selector,
+#draw-card-btn,
+#add-card-section,
+body > script { /* Hide script tags themselves, though they don't print content */
+  display: none !important;
+}
+
+/* Card Styling for Print */
+.card-container {
+  display: flex; /* Using flex to lay out cards, though for one card it's simple */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: auto; /* Take available width */
+  height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  width: 6.3cm; /* Standard poker card width */
+  height: 8.8cm; /* Standard poker card height */
+  page-break-inside: avoid !important;
+  border: 1px solid #ccc !important;
+  margin: 0.5cm !important; /* Spacing for individual cards */
+  box-shadow: none !important;
+  position: relative !important; /* Ensure it's treated as a block */
+  transform: none !important; /* Reset any 3D transforms */
+  background-color: white !important; /* Ensure card background is white */
+}
+
+/* Display only the back face of the card */
+.card-front {
+  display: none !important;
+}
+
+.card-back {
+  display: flex !important; /* Use flex to align content within the card */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: none !important;
+  position: relative !important; /* Changed from absolute to relative for normal flow in print */
+  backface-visibility: visible !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important; /* Remove rounded corners if they were on card-face directly */
+  box-shadow: none !important;
+  color: black !important; /* Ensure text on card is black */
+  /* Optional: light background for the card back */
+  background-color: #f9f9f9; /* Very light gray to differentiate card area, or keep white */
+  /* Force Background Printing (if using a colored background) */
+  /* -webkit-print-color-adjust: exact; */
+  /* print-color-adjust: exact; */
+}
+
+/* Card Content Styling for Print */
+.card-back #card-detail-text {
+  font-size: 10pt !important;
+  color: #000 !important;
+  text-align: center;
+  padding: 5px; /* Add some padding if needed */
+  max-width: 100%;
+  overflow-wrap: break-word; /* Ensure long words break */
+}
+
+.card-back .fas.fa-pepper-hot { /* Targeting the pepper icon */
+  display: block; /* Ensure it's displayed */
+  position: absolute; /* Position it at the bottom */
+  bottom: 5px;
+  right: 5px;
+  font-size: 10pt !important; /* Adjust size for print */
+  color: #555 !important; /* Make it a bit darker for print, not too faint */
+  opacity: 1 !important; /* Ensure it's not transparent */
+}
+
+/* Ensure any other text on the card back is black */
+.card-back p {
+    color: black !important;
+}
