@@ -15,9 +15,14 @@
 
     <div id="game-status">
         <p>Round: <span id="current-round-display">1</span>/9</p>
-        <p>Current Sauce: <span id="current-sauce-display">Mild Jalapeño Zing</span></p>
-        <button id="next-round-btn">Next Round</button>
+        <div>
+            <label for="round-timer-input">Round Duration (minutes):</label>
+            <input type="number" id="round-timer-input" value="3" min="1">
+        </div>
+        <button id="next-round-btn">Start Round</button>
     </div>
+
+    <p id="timer-display">Time Left: <span id="time-left-display">00:00</span></p>
 
     <div id="language-selector">
         <button id="btn-en" class="lang-btn active">English</button>
@@ -44,7 +49,6 @@
 
     <section id="add-card-section">
         <h2>Add Your Own Card</h2>
-        <p class="form-description">To add multiple questions/prompts on a single card (especially for 'Question' category), you can create a bulleted list directly in the text areas below using hyphens (-) or asterisks (*). Each new line starting with - or * will be treated as a separate item when displayed.</p>
         <form id="add-card-form">
             <div>
                 <label for="category">Category:</label>
@@ -72,5 +76,12 @@
 
     <script src="card-data.js"></script>
     <script src="script.js"></script>
+
+    <audio id="round-end-sound" src="sounds/round_end.mp3"></audio>
+    <audio id="game-over-sound" src="sounds/game_over.mp3"></audio>
+    <!-- 
+        NOTE: Create a 'sounds' directory in the root of the project 
+        and place 'round_end.mp3' and 'game_over.mp3' files there.
+    -->
 </body>
 </html>

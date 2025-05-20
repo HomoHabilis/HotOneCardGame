@@ -3,108 +3,105 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = document.querySelector('.card');
     const cardCategoryIcon = document.getElementById('card-category-icon');
     const cardCategoryText = document.getElementById('card-category-text');
-    // Updated to point to the new container for card back text
-    const cardDetailTextContainer = document.getElementById('card-detail-text-container'); 
+    const cardDetailTextContainer = document.getElementById('card-detail-text-container');
     const languageButtons = document.querySelectorAll('#language-selector .lang-btn');
     const drawCardButton = document.getElementById('draw-card-btn');
     const addCardForm = document.getElementById('add-card-form');
 
     // Game Status DOM Elements
     const currentRoundDisplay = document.getElementById('current-round-display');
-    const currentSauceDisplay = document.getElementById('current-sauce-display');
     const nextRoundButton = document.getElementById('next-round-btn');
+    const roundTimerInput = document.getElementById('round-timer-input');
+    const timeLeftDisplay = document.getElementById('time-left-display');
+
+    // Audio Elements
+    const roundEndSound = document.getElementById('round-end-sound');
+    const gameOverSound = document.getElementById('game-over-sound'); // Will be used in a future step
 
     // Global State
     let currentLanguage = 'en'; // Default language
     let currentCard = null;
     let drawnCardIds = [];
     let currentRound = 1;
-    const MAX_ROUNDS = 9;
-    const gameSauces = [
-        "Mild Jalapeño Zing",    // Round 1
-        "Spicy Serrano Kick",   // Round 2
-        "Fiery Cayenne Blast",  // Round 3
-        "Habanero Hellfire",    // Round 4
-        "Scotch Bonnet Scorch", // Round 5
-        "Ghost Pepper Phantom", // Round 6
-        "Reaper's Touch",       // Round 7
-        "Dragon's Breath Inferno",// Round 8
-        "The Final Combustion"  // Round 9
+    const MAX_ROUNDS = 9; // Max rounds remains 9 as per gameSauces length
+    const gameSauces = [ // Kept for potential future use or if sauce-per-round is re-introduced
+        "Mild Jalapeño Zing", "Spicy Serrano Kick", "Fiery Cayenne Blast",
+        "Habanero Hellfire", "Scotch Bonnet Scorch", "Ghost Pepper Phantom",
+        "Reaper's Touch", "Dragon's Breath Inferno", "The Final Combustion"
     ];
+
+    let roundTimerDuration_seconds = parseInt(roundTimerInput.value, 10) * 60;
+    let timerInterval = null;
+    let timeLeft_seconds = roundTimerDuration_seconds;
+
+    // Helper Function to format time
+    function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 
     // Function to update game status display
     function updateGameStatusDisplay() {
         if (currentRoundDisplay) {
             currentRoundDisplay.textContent = currentRound;
         }
-        if (currentSauceDisplay) {
-            currentSauceDisplay.textContent = gameSauces[currentRound - 1];
+        
+        if (timeLeftDisplay) { // Ensure this is updated on initial load too
+            timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
         }
+
         if (nextRoundButton) {
-            nextRoundButton.disabled = (currentRound === MAX_ROUNDS);
-            if (currentRound === MAX_ROUNDS) {
-                 nextRoundButton.textContent = "Game Over"; // Optional: Change text
-            } else {
-                 nextRoundButton.textContent = "Next Round";
+            if (currentRound === MAX_ROUNDS && timerInterval === null && timeLeft_seconds === 0) {
+                nextRoundButton.textContent = "Game Over!";
+                nextRoundButton.disabled = true;
+                roundTimerInput.disabled = true;
+            } else if (timerInterval !== null) { // Timer is running
+                nextRoundButton.textContent = `Round ${currentRound} In Progress...`;
+                nextRoundButton.disabled = true;
+                roundTimerInput.disabled = true;
+            } else { // Timer not running, ready to start a round
+                if (currentRound === MAX_ROUNDS) {
+                    nextRoundButton.textContent = "Start Final Round";
+                } else if (currentRound > 1) {
+                    nextRoundButton.textContent = `Start Round ${currentRound}`;
+                } else {
+                    nextRoundButton.textContent = "Start Round"; // Initial state for round 1
+                }
+                nextRoundButton.disabled = false;
+                roundTimerInput.disabled = false;
             }
         }
     }
 
-
-    // Function to update the card display based on currentCard and currentLanguage
+    // Function to update the card display
     function updateCardDisplay() {
         if (!currentCard) {
             if (cardCategoryText) cardCategoryText.textContent = 'No card';
-            if (cardDetailTextContainer) { // Check if container exists
-                cardDetailTextContainer.innerHTML = '<p>Draw a card to start!</p>'; // Default message
+            if (cardDetailTextContainer) {
+                cardDetailTextContainer.innerHTML = '<p>Draw a card to start!</p>';
             }
             if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-question-circle fa-3x';
             return;
         }
-
-        if (cardCategoryIcon) {
-            cardCategoryIcon.className = `${currentCard.icon} fa-3x`;
-        }
+        if (cardCategoryIcon) cardCategoryIcon.className = `${currentCard.icon} fa-3x`;
         if (cardCategoryText) {
             const category = currentCard.category;
             cardCategoryText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
         }
-
-        // Logic for card back text (paragraph or list)
         if (cardDetailTextContainer) {
             const content = currentCard.text[currentLanguage];
-            cardDetailTextContainer.innerHTML = ''; // Clear previous content
-
-            if (Array.isArray(content)) {
-                if (content.length > 1) { // Only use <ul> if more than one item
-                    const ul = document.createElement('ul');
-                    content.forEach(itemText => {
-                        const li = document.createElement('li');
-                        li.textContent = itemText;
-                        ul.appendChild(li);
-                    });
-                    cardDetailTextContainer.appendChild(ul);
-                } else if (content.length === 1) { // If array has one item, treat as paragraph
-                    const p = document.createElement('p');
-                    p.textContent = content[0];
-                    cardDetailTextContainer.appendChild(p);
-                } else { // If array is empty, show a placeholder
-                    const p = document.createElement('p');
-                    p.textContent = 'No details available.';
-                    cardDetailTextContainer.appendChild(p);
-                }
-            } else if (typeof content === 'string') { // Fallback for single string content
-                const p = document.createElement('p');
+            cardDetailTextContainer.innerHTML = '';
+            const p = document.createElement('p');
+            if (content && content.trim() !== '') {
                 p.textContent = content;
-                cardDetailTextContainer.appendChild(p);
-            } else { // Fallback if content is undefined or unexpected type
-                 const p = document.createElement('p');
-                 p.textContent = 'Content format error.';
-                 cardDetailTextContainer.appendChild(p);
+            } else {
+                p.textContent = "No details available for this language.";
             }
+            cardDetailTextContainer.appendChild(p);
         }
     }
-
+    
     // GAME FLOW NOTE (from user feedback):
     // While "Punishment" cards can be drawn like any other card using this function,
     // the intended game flow is typically:
@@ -112,84 +109,73 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. If the player fails to answer/perform satisfactorily or refuses,
     //    then a "Punishment" card is drawn (or a specific punishment is applied).
     // This function doesn't enforce that specific flow but provides the cards.
-    // Function to draw a new card
     function drawNewCard() {
         if (typeof cardData === 'undefined' || cardData.length === 0) {
             if (cardCategoryText) cardCategoryText.textContent = "Error";
-            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = "<p>No card data loaded or available.</p>";
+            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = "<p>No card data loaded.</p>";
             if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-exclamation-triangle fa-3x';
             return;
         }
-
         if (drawnCardIds.length === cardData.length) {
-            drawnCardIds = []; 
-            // alert("All cards have been drawn for this round! The deck has been reshuffled for the round.");
-            // Optionally, prevent drawing more cards until next round or show a specific message.
-            // For now, just reshuffling for the current round.
+            drawnCardIds = [];
         }
-
         let selectedCard;
-        let attempts = 0; 
+        let attempts = 0;
         do {
             const randomIndex = Math.floor(Math.random() * cardData.length);
             selectedCard = cardData[randomIndex];
             attempts++;
-            if (attempts > cardData.length * 2 && cardData.length > 0) { 
-                 console.warn("Could not find an undrawn card after multiple attempts. Resetting drawn list or using last selected.");
-                 drawnCardIds = []; 
-                 break;
+            if (attempts > cardData.length * 2 && cardData.length > 0) {
+                console.warn("Could not find an undrawn card. Resetting drawn list.");
+                drawnCardIds = [];
+                break;
             }
         } while (drawnCardIds.includes(selectedCard.id) && cardData.length > drawnCardIds.length);
-
-
         currentCard = selectedCard;
         drawnCardIds.push(currentCard.id);
-
         if (card && card.classList.contains('is-flipped')) {
             card.classList.remove('is-flipped');
             setTimeout(updateCardDisplay, 300);
         } else {
             updateCardDisplay();
         }
-        console.log(`Drawn card ID: ${currentCard.id}, Language: ${currentLanguage}, Round: ${currentRound}`);
+        console.log(`Drawn card ID: ${currentCard.id}, Lang: ${currentLanguage}, Round: ${currentRound}`);
     }
 
-    // Card Flipping
     if (card) {
-        card.addEventListener('click', () => {
-            card.classList.toggle('is-flipped');
-        });
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
     }
 
-    // Language Selection
     languageButtons.forEach(button => {
         button.addEventListener('click', () => {
             languageButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentLanguage = button.id.split('-')[1];
-            console.log(`Language set to: ${currentLanguage}`);
-            if (currentCard) {
-                updateCardDisplay();
-            }
+            if (currentCard) updateCardDisplay();
         });
     });
 
-    // Draw New Card Button
     if (drawCardButton) {
-        drawCardButton.addEventListener('click', drawNewCard);
+        drawCardButton.addEventListener('click', () => {
+            if (timerInterval === null && currentRound <= MAX_ROUNDS) { // Only allow drawing if timer not running or game not over
+                 alert("Please start the round before drawing a new card.");
+                 return;
+            }
+            if (timerInterval !== null) { // Timer is running
+                drawNewCard();
+            } else {
+                alert("The game/round has not started or is over.");
+            }
+        });
     }
 
-    // Add New Card Form Submission
     if (addCardForm) {
         addCardForm.addEventListener('submit', (event) => {
-            event.preventDefault(); 
-
+            event.preventDefault();
             const category = document.getElementById('category').value;
-            // For multi-line input, split by newline and filter empty lines
-            const text_en = document.getElementById('text_en').value.split('\n').map(s => s.trim()).filter(s => s);
-            const text_it = document.getElementById('text_it').value.split('\n').map(s => s.trim()).filter(s => s);
-            const text_fr = document.getElementById('text_fr').value.split('\n').map(s => s.trim()).filter(s => s);
-
+            const text_en_value = document.getElementById('text_en').value.trim();
+            const text_it_value = document.getElementById('text_it').value.trim();
+            const text_fr_value = document.getElementById('text_fr').value.trim();
             let iconClass = '';
             switch (category) {
                 case 'question': iconClass = 'fas fa-question-circle'; break;
@@ -197,48 +183,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'punishment': iconClass = 'fas fa-bomb'; break;
                 default: iconClass = 'fas fa-question-circle';
             }
-
             const newId = (cardData.length > 0 ? Math.max(...cardData.map(c => c.id)) : 0) + 1;
             const newCard = {
                 id: newId, category: category, icon: iconClass,
-                text: { en: text_en.length > 0 ? text_en : [""], it: text_it.length > 0 ? text_it : [""], fr: text_fr.length > 0 ? text_fr : [""] }
+                text: { en: text_en_value, it: text_it_value, fr: text_fr_value }
             };
-
-            if (typeof cardData !== 'undefined') {
-                cardData.push(newCard);
-            } else {
-                console.error("cardData is not defined. Cannot add new card.");
-                alert("Error: Card data is not available. Cannot add new card.");
-                return;
-            }
+            if (typeof cardData !== 'undefined') cardData.push(newCard);
+            else { console.error("cardData undefined."); alert("Error adding card."); return; }
             alert('Card added successfully!');
             addCardForm.reset();
             console.log("New card added:", newCard);
-            console.log("Updated cardData:", cardData);
         });
     }
 
-    // Event Listener for "Next Round" Button
+    // "Start Round" Button Event Listener (formerly Next Round)
     if (nextRoundButton) {
         nextRoundButton.addEventListener('click', () => {
-            if (currentRound < MAX_ROUNDS) {
-                currentRound++;
-                drawnCardIds = []; // Reset drawn cards for the new round
-                updateGameStatusDisplay();
-                drawNewCard(); // Automatically draw a new card for the new round
-                console.log(`Moved to Round: ${currentRound}`);
-            } else {
-                console.log("Game Over - Max rounds reached.");
-                // Button should already be disabled by updateGameStatusDisplay
+            if (timerInterval !== null) return; // Timer already running
+
+            // If previous round ended and we are starting the next one
+            if (timeLeft_seconds === 0 && currentRound < MAX_ROUNDS) {
+                 currentRound++; // Advance to the next round
             }
+            
+            const userDurationMinutes = parseInt(roundTimerInput.value, 10);
+            roundTimerDuration_seconds = (userDurationMinutes > 0 ? userDurationMinutes : 3) * 60;
+            timeLeft_seconds = roundTimerDuration_seconds;
+
+            drawnCardIds = []; // Reset drawn cards for the new round
+            updateGameStatusDisplay(); // Update display for the current/new round
+            drawNewCard(); // Draw the first card of the round
+
+            if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
+            roundTimerInput.disabled = true;
+            nextRoundButton.disabled = true; // Will be re-enabled by updateGameStatusDisplay after timer
+            updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
+
+            timerInterval = setInterval(() => {
+                timeLeft_seconds--;
+                if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
+
+                if (timeLeft_seconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    
+                    if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
+
+                    if (currentRound < MAX_ROUNDS) {
+                        // Ready for the next round to be started
+                        // currentRound is NOT incremented here; it increments when "Start Round X+1" is clicked.
+                    } else { // MAX_ROUNDS reached and timer ended
+                        console.log("Game Over - Final Round Ended!");
+                        if(gameOverSound) gameOverSound.play().catch(e => console.error("Error playing sound:", e));
+                        
+                        // Enhance "Game Finished" sequence:
+                        const cardFrontIcon = document.getElementById('card-category-icon');
+                        const cardFrontText = document.getElementById('card-category-text');
+                        const cardDetailContainer = document.getElementById('card-detail-text-container');
+                        const cardElement = document.querySelector('.card');
+
+                        if (cardFrontIcon) cardFrontIcon.className = 'fas fa-trophy fa-3x'; // Trophy icon for game over
+                        if (cardFrontText) cardFrontText.textContent = 'GAME';
+                        if (cardDetailContainer) cardDetailContainer.innerHTML = '<p>FINISHED!</p>';
+                        
+                        if (cardElement) {
+                            cardElement.classList.add('game-over-card');
+                            if (cardElement.classList.contains('is-flipped')) {
+                                cardElement.classList.remove('is-flipped');
+                            }
+                            // Optional: Remove click listener to prevent flipping
+                            // cardElement.removeEventListener('click', cardFlipHandler); // Need to name the handler
+                        }
+                        // Ensure draw card button is also disabled or handled
+                        if(drawCardButton) drawCardButton.disabled = true;
+                    }
+                    updateGameStatusDisplay(); // Update button text and state
+                }
+            }, 1000);
         });
     }
 
     // Initial Setup
     const initialActiveButton = document.getElementById(`btn-${currentLanguage}`);
-    if (initialActiveButton) {
-        initialActiveButton.classList.add('active');
-    }
-    updateGameStatusDisplay(); // Call to set initial game status
-    drawNewCard(); // Draw the first card when the page loads
+    if (initialActiveButton) initialActiveButton.classList.add('active');
+    
+    timeLeft_seconds = roundTimerDuration_seconds; // Initialize timeLeft_seconds
+    updateGameStatusDisplay(); // Set up initial round text, button state, and timer display
+    // Do not draw a card initially until "Start Round" is clicked for the first time.
+    // So, clear placeholder card content if any
+    if (cardCategoryText) cardCategoryText.textContent = 'Game Ready';
+    if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Click "Start Round" to begin!</p>';
+    if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-hourglass-start fa-3x';
 });

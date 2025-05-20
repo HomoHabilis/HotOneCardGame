@@ -41,7 +41,40 @@ header h1 {
     text-align: center;
 }
 
-#game-status p {
+#game-status div { /* Container for label and input */
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-status label[for="round-timer-input"] {
+    font-family: 'Montserrat', sans-serif;
+    color: #ddd; /* Consistent with other labels */
+    font-size: 1em; /* Slightly smaller or same as p */
+    margin-right: 8px; /* Space before the input */
+}
+
+#round-timer-input {
+    font-family: 'Montserrat', sans-serif;
+    width: 60px; /* Or 4em */
+    padding: 5px 8px;
+    margin-left: 5px; /* Space after label */
+    margin-right: 10px; /* Space before button */
+    background-color: #444; /* Darker input background */
+    color: #fff; /* White text in input */
+    border: 1px solid #555;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#round-timer-input:disabled {
+    background-color: #333;
+    color: #777;
+}
+
+
+#game-status p { /* For "Round: X/9" */
     font-family: 'Montserrat', sans-serif;
     color: #ddd; /* Light gray text */
     font-size: 1.1em;
@@ -53,13 +86,32 @@ header h1 {
     color: #ff6347; /* Orange-red for emphasis, matches active lang button */
 }
 
+#timer-display { /* For "Time Left: MM:SS" paragraph */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2em; /* Slightly larger */
+    color: #fff; /* White text */
+    margin: 15px 0; /* Vertical margin */
+    text-align: center;
+}
+
+#time-left-display { /* For the MM:SS span itself */
+    font-weight: bold;
+    color: #ff6347; /* Orange-red, consistent with other highlighted spans */
+    background-color: #111; /* Dark background for the time itself */
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-width: 70px; /* Ensure it has some width for 00:00 */
+    display: inline-block; /* To allow padding and min-width */
+}
+
 #next-round-btn {
     font-family: 'Lilita One', cursive;
     background-color: #FFA500; /* Orange, distinct from other buttons */
     color: white;
     border: none;
-    padding: 10px 25px;
+    padding: 12px 20px; /* Adjusted padding for potentially longer text */
     margin-top: 10px;
+    min-width: 180px; /* Ensure button can hold longer texts */
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1em;
@@ -194,15 +246,6 @@ header h1 {
     text-align: center;
 }
 
-#add-card-section .form-description {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.9em;
-    color: #ccc; /* Lighter gray for less emphasis than labels */
-    margin-bottom: 20px;
-    line-height: 1.4;
-    text-align: left;
-}
-
 #add-card-form div {
     margin-bottom: 15px;
     display: flex;
@@ -303,38 +346,57 @@ header h1 {
     margin: 0; /* Reset margin for p elements directly in card-back if any */
 }
 
-/* Styling for lists within the card back text container */
-#card-detail-text-container ul {
-    list-style-type: disc; /* Standard disc bullets */
-    margin: 0;
-    padding-left: 20px; /* Indentation for bullets */
-    text-align: left; /* Align list items to the left */
-    max-width: 100%;
-}
-
-#card-detail-text-container li {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.0em; /* Slightly smaller if multiple items, or keep 1.1em */
-    line-height: 1.5;
-    color: #333; /* Match paragraph text color */
-    margin-bottom: 8px; /* Space between list items */
-}
-
-#card-detail-text-container li:last-child {
-    margin-bottom: 0; /* No margin for the last item */
-}
-
 /* Ensure paragraphs within the container also follow similar font settings */
+/* This will now be the primary style for text in the container */
 #card-detail-text-container p {
     font-family: 'Montserrat', sans-serif;
     font-size: 1.1em;
     line-height: 1.6;
     color: #333;
     margin: 0; /* Reset margin for p elements within the container */
+    text-align: center; /* Center the text within the card back */
+    padding: 5px; /* Add some padding around the text */
+    box-sizing: border-box;
+    width: 100%;
 }
 
 
 /* Flipped Card State */
 .card.is-flipped {
     transform: rotateY(180deg);
+}
+
+/* Game Over Card Styling */
+.game-over-card .card-front,
+.game-over-card .card-back { /* Apply to both faces if needed, or just front if it's forced to show front */
+    background: linear-gradient(135deg, #444, #222) !important; /* Darker, distinct background */
+    color: #FFD700 !important; /* Gold text for emphasis */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.game-over-card .card-front i { /* Style for the trophy icon */
+    color: #FFD700 !important; /* Gold icon */
+    margin-bottom: 15px; /* Space below icon */
+}
+
+.game-over-card #card-category-text { /* For "GAME" text */
+    font-family: 'Lilita One', cursive;
+    font-size: 3em !important; /* Larger text */
+    color: #FFD700 !important;
+    margin-top: 0; /* Reset margin */
+}
+
+.game-over-card #card-detail-text-container p { /* For "FINISHED!" text */
+    font-family: 'Lilita One', cursive;
+    font-size: 2.5em !important; /* Larger text */
+    color: #FFD700 !important;
+}
+
+/* Ensure the pepper icon from normal card back is hidden on game-over card */
+.game-over-card .card-back i.fa-pepper-hot {
+    display: none !important;
 }
