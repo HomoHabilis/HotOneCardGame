@@ -45,10 +45,15 @@
         </div>
     </div>
 
-    <button id="draw-card-btn">Draw New Card</button>
+    <div id="draw-buttons-container" style="margin-top: 15px; text-align: center;">
+        <button id="draw-question-btn" class="draw-category-btn" disabled><i class="fas fa-question-circle"></i> Draw Question</button>
+        <button id="draw-dare-btn" class="draw-category-btn" disabled><i class="fas fa-fire"></i> Draw Dare</button>
+        <button id="draw-punishment-btn" class="draw-category-btn" disabled><i class="fas fa-bomb"></i> Draw Punishment</button>
+    </div>
 
     <section id="add-card-section">
         <h2>Add Your Own Card</h2>
+        <p class="form-description">Note: Cards added here are available for the current session only. They will be available each round until drawn, and reset if a new round starts. They are lost if you reload the page.</p>
         <form id="add-card-form">
             <div>
                 <label for="category">Category:</label>
@@ -74,7 +79,6 @@
         </form>
     </section>
 
-    <script src="card-data.js"></script>
     <script src="script.js"></script>
 
     <audio id="round-end-sound" src="sounds/round_end.mp3"></audio>

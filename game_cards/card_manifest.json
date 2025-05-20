@@ -1,0 +1,16 @@
+{
+  "_comment": "This file lists all card JSON files for the game. IMPORTANT: If you add or remove card files in the 'questions', 'dares', or 'punishments' folders, you MUST manually update the corresponding list in this manifest file for the game to recognize those changes.",
+  "questions": [
+    "game_cards/questions/q1.json",
+    "game_cards/questions/q2.json",
+    "game_cards/questions/q3.json"
+  ],
+  "dares": [
+    "game_cards/dares/d1.json",
+    "game_cards/dares/d2.json"
+  ],
+  "punishments": [
+    "game_cards/punishments/p1.json",
+    "game_cards/punishments/p2.json"
+  ]
+}

@@ -246,6 +246,16 @@ header h1 {
     text-align: center;
 }
 
+#add-card-section .form-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+    color: #ccc; /* Lighter gray for less emphasis than labels */
+    margin-bottom: 20px; /* Space before the form */
+    line-height: 1.4;
+    text-align: left; /* Align text to the left for readability */
+    padding: 0 5px; /* Slight padding if section is narrower */
+}
+
 #add-card-form div {
     margin-bottom: 15px;
     display: flex;
@@ -337,6 +347,74 @@ header h1 {
 #draw-card-btn:active {
     transform: translateY(2px); /* Simple press effect */
     box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+/* Styles for new draw buttons container and buttons */
+#draw-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.draw-category-btn {
+    font-family: 'Lilita One', cursive;
+    color: white;
+    border: none;
+    padding: 10px 15px; /* Slightly smaller padding than next-round */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em; /* Slightly smaller font size */
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+    display: flex; /* For icon and text alignment */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.draw-category-btn i {
+    font-size: 1.1em; /* Icon size relative to button text */
+}
+
+/* Specific colors for each button */
+#draw-question-btn {
+    background-color: #17a2b8; /* Info Blue */
+}
+#draw-question-btn:hover {
+    background-color: #138496;
+}
+
+#draw-dare-btn {
+    background-color: #fd7e14; /* Orange (already used for next-round, maybe a diff shade?) */
+                               /* Using a slightly different orange for dares */
+    background-color: #ff8c00; /* DarkOrange */
+}
+#draw-dare-btn:hover {
+    background-color: #cc7000;
+}
+
+#draw-punishment-btn {
+    background-color: #dc3545; /* Danger Red */
+}
+#draw-punishment-btn:hover {
+    background-color: #c82333;
+}
+
+.draw-category-btn:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.draw-category-btn:disabled i {
+    color: #999; /* Ensure icon color also changes when disabled */
 }
 
 .card-back p {

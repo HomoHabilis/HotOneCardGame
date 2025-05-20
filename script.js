@@ -14,14 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const roundTimerInput = document.getElementById('round-timer-input');
     const timeLeftDisplay = document.getElementById('time-left-display');
 
+    // Draw Buttons
+    const drawQuestionBtn = document.getElementById('draw-question-btn');
+    const drawDareBtn = document.getElementById('draw-dare-btn');
+    const drawPunishmentBtn = document.getElementById('draw-punishment-btn');
+
     // Audio Elements
     const roundEndSound = document.getElementById('round-end-sound');
     const gameOverSound = document.getElementById('game-over-sound'); // Will be used in a future step
 
     // Global State
     let currentLanguage = 'en'; // Default language
-    let currentCard = null;
-    let drawnCardIds = [];
+    let currentCard = null; // Structure: { text: {en:'...', it:'...', fr:'...'}, category: '...' }
+    let cardManifest = null;
+    let drawnCardPaths = { questions: [], dares: [], punishments: [] }; // For manifest cards
+    let sessionAddedCards = { questions: [], dares: [], punishments: [] }; // For user-added cards
+    const categoryIcons = {
+        questions: "fas fa-question-circle",
+        dares: "fas fa-fire",
+        punishments: "fas fa-bomb"
+    };
     let currentRound = 1;
     const MAX_ROUNDS = 9; // Max rounds remains 9 as per gameSauces length
     const gameSauces = [ // Kept for potential future use or if sauce-per-round is re-introduced
@@ -84,10 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-question-circle fa-3x';
             return;
         }
-        if (cardCategoryIcon) cardCategoryIcon.className = `${currentCard.icon} fa-3x`;
-        if (cardCategoryText) {
-            const category = currentCard.category;
-            cardCategoryText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        // Icon update using categoryIcons
+        if (cardCategoryIcon && currentCard && currentCard.category) {
+            cardCategoryIcon.className = categoryIcons[currentCard.category] + ' fa-3x'; 
+        }
+        // Category text on card front:
+        if (cardCategoryText && currentCard && currentCard.category) {
+            cardCategoryText.textContent = currentCard.category.charAt(0).toUpperCase() + currentCard.category.slice(1);
         }
         if (cardDetailTextContainer) {
             const content = currentCard.text[currentLanguage];
@@ -102,45 +117,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // GAME FLOW NOTE (from user feedback):
-    // While "Punishment" cards can be drawn like any other card using this function,
-    // the intended game flow is typically:
-    // 1. A player draws a "Question" or "Dare" card.
-    // 2. If the player fails to answer/perform satisfactorily or refuses,
-    //    then a "Punishment" card is drawn (or a specific punishment is applied).
-    // This function doesn't enforce that specific flow but provides the cards.
-    function drawNewCard() {
-        if (typeof cardData === 'undefined' || cardData.length === 0) {
-            if (cardCategoryText) cardCategoryText.textContent = "Error";
-            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = "<p>No card data loaded.</p>";
-            if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-exclamation-triangle fa-3x';
+    // Function to reset drawn card paths and session card drawn status for the current round
+    function resetRoundState() {
+        drawnCardPaths.questions = [];
+        drawnCardPaths.dares = [];
+        drawnCardPaths.punishments = [];
+
+        for (const cat of ['questions', 'dares', 'punishments']) {
+            sessionAddedCards[cat].forEach(card => card.drawn = false);
+        }
+        console.log("Drawn card paths and session card 'drawn' status reset for the new round.");
+    }
+
+    async function drawCategorizedCard(category) {
+        // Check for undrawn session-added cards first
+        const undrawnSessionCards = sessionAddedCards[category].filter(card => !card.drawn);
+        if (undrawnSessionCards.length > 0) {
+            const sessionCardToDraw = undrawnSessionCards[0]; // Draw the first available
+            sessionCardToDraw.drawn = true; // Mark as drawn
+            currentCard = { // Update global currentCard
+                text: sessionCardToDraw.text,
+                category: category,
+                isSessionCard: true 
+            };
+            
+            // Standard card display logic
+            if (card && card.classList.contains('is-flipped')) { // Check if card element exists
+                 card.classList.remove('is-flipped');
+                 setTimeout(updateCardDisplay, 300);
+            } else {
+                updateCardDisplay();
+            }
+            console.log("Drew a session-added card:", currentCard);
+            return; // Exit function after drawing a session card
+        }
+
+        // If no undrawn session cards, proceed to draw from manifest...
+        if (!cardManifest) {
+            console.error("Card manifest not loaded yet.");
+            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Card data is not loaded. Try again later.</p>';
             return;
         }
-        if (drawnCardIds.length === cardData.length) {
-            drawnCardIds = [];
+        if (!cardManifest[category] || cardManifest[category].length === 0) {
+            console.error(`No cards found for category: ${category}`);
+            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = `<p>No manifest cards available for ${category}.</p>`;
+            return;
         }
-        let selectedCard;
-        let attempts = 0;
-        do {
-            const randomIndex = Math.floor(Math.random() * cardData.length);
-            selectedCard = cardData[randomIndex];
-            attempts++;
-            if (attempts > cardData.length * 2 && cardData.length > 0) {
-                console.warn("Could not find an undrawn card. Resetting drawn list.");
-                drawnCardIds = [];
-                break;
+
+        let availablePaths = cardManifest[category].filter(path => !drawnCardPaths[category].includes(path));
+
+        if (availablePaths.length === 0) {
+            console.log(`All manifest ${category} cards drawn in this round. Resetting for this category.`);
+            drawnCardPaths[category] = []; 
+            availablePaths = cardManifest[category];
+            if (availablePaths.length === 0) { 
+                 if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = `<p>No cards defined for ${category} in manifest.</p>`;
+                 return;
             }
-        } while (drawnCardIds.includes(selectedCard.id) && cardData.length > drawnCardIds.length);
-        currentCard = selectedCard;
-        drawnCardIds.push(currentCard.id);
-        if (card && card.classList.contains('is-flipped')) {
-            card.classList.remove('is-flipped');
-            setTimeout(updateCardDisplay, 300);
-        } else {
-            updateCardDisplay();
+             alert(`All manifest ${category} cards for this round have been drawn and will now be reshuffled for this round.`);
         }
-        console.log(`Drawn card ID: ${currentCard.id}, Lang: ${currentLanguage}, Round: ${currentRound}`);
+
+        const randomIndex = Math.floor(Math.random() * availablePaths.length);
+        const cardPath = availablePaths[randomIndex];
+
+        try {
+            const response = await fetch(cardPath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} for ${cardPath}`);
+            }
+            const cardFileData = await response.json();
+            
+            currentCard = { 
+                text: cardFileData.text,
+                category: category,
+                isSessionCard: false // Mark as not a session card
+            };
+            drawnCardPaths[category].push(cardPath); 
+
+            if (card && card.classList.contains('is-flipped')) { // Check if card element exists
+                 card.classList.remove('is-flipped');
+                 setTimeout(updateCardDisplay, 300); 
+            } else {
+                updateCardDisplay();
+            }
+            console.log(`Drawn card from manifest: ${cardPath}, Lang: ${currentLanguage}, Round: ${currentRound}`);
+
+        } catch (error) {
+            console.error("Error fetching or parsing card file:", cardPath, error);
+            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = `<p>Error loading card: ${cardPath}.</p>`;
+        }
     }
+
 
     if (card) {
         card.addEventListener('click', () => card.classList.toggle('is-flipped'));
@@ -155,19 +222,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    if (drawCardButton) {
-        drawCardButton.addEventListener('click', () => {
-            if (timerInterval === null && currentRound <= MAX_ROUNDS) { // Only allow drawing if timer not running or game not over
-                 alert("Please start the round before drawing a new card.");
-                 return;
-            }
-            if (timerInterval !== null) { // Timer is running
-                drawNewCard();
-            } else {
-                alert("The game/round has not started or is over.");
-            }
-        });
+    // Old drawCardButton listener is removed as per instructions.
+    
+    // Event listeners for new draw buttons
+    if (drawQuestionBtn) {
+        drawQuestionBtn.addEventListener('click', () => drawCategorizedCard('questions'));
     }
+    if (drawDareBtn) {
+        drawDareBtn.addEventListener('click', () => drawCategorizedCard('dares'));
+    }
+    if (drawPunishmentBtn) {
+        drawPunishmentBtn.addEventListener('click', () => drawCategorizedCard('punishments'));
+    }
+
 
     if (addCardForm) {
         addCardForm.addEventListener('submit', (event) => {
@@ -176,23 +243,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const text_en_value = document.getElementById('text_en').value.trim();
             const text_it_value = document.getElementById('text_it').value.trim();
             const text_fr_value = document.getElementById('text_fr').value.trim();
-            let iconClass = '';
+            let iconClass = ''; // Not strictly needed for session card data, but kept for potential future use
             switch (category) {
-                case 'question': iconClass = 'fas fa-question-circle'; break;
-                case 'dare': iconClass = 'fas fa-fire'; break;
-                case 'punishment': iconClass = 'fas fa-bomb'; break;
+                case 'questions': iconClass = categoryIcons.questions; break;
+                case 'dares': iconClass = categoryIcons.dares; break;
+                case 'punishments': iconClass = categoryIcons.punishments; break;
                 default: iconClass = 'fas fa-question-circle';
             }
-            const newId = (cardData.length > 0 ? Math.max(...cardData.map(c => c.id)) : 0) + 1;
-            const newCard = {
-                id: newId, category: category, icon: iconClass,
-                text: { en: text_en_value, it: text_it_value, fr: text_fr_value }
+
+            const newSessionCard = {
+                text: {
+                    en: text_en_value,
+                    it: text_it_value,
+                    fr: text_fr_value
+                },
+                isSessionCard: true,
+                drawn: false // Initialize as not drawn
             };
-            if (typeof cardData !== 'undefined') cardData.push(newCard);
-            else { console.error("cardData undefined."); alert("Error adding card."); return; }
-            alert('Card added successfully!');
+
+            sessionAddedCards[category].push(newSessionCard);
+            
+            alert('Session card added successfully! It will be prioritized when drawing from its category.');
             addCardForm.reset();
-            console.log("New card added:", newCard);
+            console.log("Session card added:", newSessionCard);
+            console.log("Current sessionAddedCards:", sessionAddedCards);
         });
     }
 
@@ -210,14 +284,19 @@ document.addEventListener('DOMContentLoaded', () => {
             roundTimerDuration_seconds = (userDurationMinutes > 0 ? userDurationMinutes : 3) * 60;
             timeLeft_seconds = roundTimerDuration_seconds;
 
-            drawnCardIds = []; // Reset drawn cards for the new round
+            resetRoundState(); // Call the renamed and updated function
             updateGameStatusDisplay(); // Update display for the current/new round
-            drawNewCard(); // Draw the first card of the round
+            // Do NOT draw a card automatically here. User will use new draw buttons.
 
             if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
             roundTimerInput.disabled = true;
-            nextRoundButton.disabled = true; // Will be re-enabled by updateGameStatusDisplay after timer
+            nextRoundButton.disabled = true; 
             updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
+
+            // Enable categorized draw buttons when timer starts
+            if(drawQuestionBtn) drawQuestionBtn.disabled = false;
+            if(drawDareBtn) drawDareBtn.disabled = false;
+            if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
 
             timerInterval = setInterval(() => {
                 timeLeft_seconds--;
@@ -227,22 +306,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearInterval(timerInterval);
                     timerInterval = null;
                     
+                    // Disable categorized draw buttons when timer ends
+                    if(drawQuestionBtn) drawQuestionBtn.disabled = true;
+                    if(drawDareBtn) drawDareBtn.disabled = true;
+                    if(drawPunishmentBtn) drawPunishmentBtn.disabled = true;
+                    
                     if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
 
                     if (currentRound < MAX_ROUNDS) {
                         // Ready for the next round to be started
-                        // currentRound is NOT incremented here; it increments when "Start Round X+1" is clicked.
                     } else { // MAX_ROUNDS reached and timer ended
                         console.log("Game Over - Final Round Ended!");
                         if(gameOverSound) gameOverSound.play().catch(e => console.error("Error playing sound:", e));
                         
-                        // Enhance "Game Finished" sequence:
                         const cardFrontIcon = document.getElementById('card-category-icon');
                         const cardFrontText = document.getElementById('card-category-text');
                         const cardDetailContainer = document.getElementById('card-detail-text-container');
                         const cardElement = document.querySelector('.card');
 
-                        if (cardFrontIcon) cardFrontIcon.className = 'fas fa-trophy fa-3x'; // Trophy icon for game over
+                        if (cardFrontIcon) cardFrontIcon.className = 'fas fa-trophy fa-3x';
                         if (cardFrontText) cardFrontText.textContent = 'GAME';
                         if (cardDetailContainer) cardDetailContainer.innerHTML = '<p>FINISHED!</p>';
                         
@@ -251,13 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (cardElement.classList.contains('is-flipped')) {
                                 cardElement.classList.remove('is-flipped');
                             }
-                            // Optional: Remove click listener to prevent flipping
-                            // cardElement.removeEventListener('click', cardFlipHandler); // Need to name the handler
                         }
-                        // Ensure draw card button is also disabled or handled
-                        if(drawCardButton) drawCardButton.disabled = true;
+                        // Draw buttons are already disabled above, and nextRoundButton is handled by updateGameStatusDisplay
                     }
-                    updateGameStatusDisplay(); // Update button text and state
+                    updateGameStatusDisplay(); 
                 }
             }, 1000);
         });
@@ -274,4 +353,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cardCategoryText) cardCategoryText.textContent = 'Game Ready';
     if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Click "Start Round" to begin!</p>';
     if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-hourglass-start fa-3x';
+
+    loadManifest(); // Load the card manifest on script load
 });
+
+async function loadManifest() {
+    try {
+        const response = await fetch('game_cards/card_manifest.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        cardManifest = await response.json();
+        console.log("Card manifest loaded:", cardManifest);
+        // Buttons are initially disabled in HTML.
+        // Their state will be controlled by the timer logic (enabled when round starts, disabled when round ends/not started).
+        // No direct enabling/disabling here needed anymore.
+    } catch (error) {
+        console.error("Could not load card manifest:", error);
+        const cardDetailContainer = document.getElementById('card-detail-text-container');
+        if (cardDetailContainer) cardDetailContainer.innerHTML = '<p>Error: Could not load card data. Please check manifest and card files.</p>';
+        // Ensure draw buttons remain disabled if manifest load fails
+        const drawQuestionBtn = document.getElementById('draw-question-btn');
+        const drawDareBtn = document.getElementById('draw-dare-btn');
+        const drawPunishmentBtn = document.getElementById('draw-punishment-btn');
+        if(drawQuestionBtn) drawQuestionBtn.disabled = true;
+        if(drawDareBtn) drawDareBtn.disabled = true;
+        if(drawPunishmentBtn) drawPunishmentBtn.disabled = true;
+    }
+}
