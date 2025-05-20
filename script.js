@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLanguage = 'en'; // Default language
     let currentCard = null; // Structure: { text: {en:'...', it:'...', fr:'...'}, category: '...' }
     let cardManifest = null;
+    let manifestLoaded = false; // New flag
     let drawnCardPaths = { questions: [], dares: [], punishments: [] }; // For manifest cards
     let sessionAddedCards = { questions: [], dares: [], punishments: [] }; // For user-added cards
     const categoryIcons = {
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // If no undrawn session cards, proceed to draw from manifest...
         if (!cardManifest) {
-            console.error("Card manifest not loaded yet.");
+            console.error("Draw attempt failed: Manifest not loaded"); // Added log
             if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Card data is not loaded. Try again later.</p>';
             return;
         }
@@ -293,10 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
             nextRoundButton.disabled = true; 
             updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
 
-            // Enable categorized draw buttons when timer starts
-            if(drawQuestionBtn) drawQuestionBtn.disabled = false;
-            if(drawDareBtn) drawDareBtn.disabled = false;
-            if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
+            // Enable categorized draw buttons when timer starts, only if manifest is loaded
+            if (manifestLoaded) {
+                if(drawQuestionBtn) drawQuestionBtn.disabled = false;
+                if(drawDareBtn) drawDareBtn.disabled = false;
+                if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
+            } else {
+                console.warn("Timer started, but manifest not yet loaded. Draw buttons remain disabled.");
+            }
 
             timerInterval = setInterval(() => {
                 timeLeft_seconds--;
@@ -358,20 +363,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadManifest() {
+    console.log("Attempting to load manifest..."); // Added log
     try {
         const response = await fetch('game_cards/card_manifest.json');
+        console.log("Manifest fetched, status:", response.status); // Added log
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        cardManifest = await response.json();
-        console.log("Card manifest loaded:", cardManifest);
-        // Buttons are initially disabled in HTML.
-        // Their state will be controlled by the timer logic (enabled when round starts, disabled when round ends/not started).
-        // No direct enabling/disabling here needed anymore.
+        const manifestData = await response.json(); // Use temp variable
+        console.log("Manifest parsed:", manifestData); // Added log
+        cardManifest = manifestData; // Assign to global variable
+        manifestLoaded = true; // Set the flag
+        
+        console.log("Card manifest successfully loaded and assigned. manifestLoaded = true");
+
     } catch (error) {
-        console.error("Could not load card manifest:", error);
+        console.error("Error loading manifest:", error); // Updated log message
+        manifestLoaded = false; // Ensure flag is false on error
         const cardDetailContainer = document.getElementById('card-detail-text-container');
         if (cardDetailContainer) cardDetailContainer.innerHTML = '<p>Error: Could not load card data. Please check manifest and card files.</p>';
+        
         // Ensure draw buttons remain disabled if manifest load fails
         const drawQuestionBtn = document.getElementById('draw-question-btn');
         const drawDareBtn = document.getElementById('draw-dare-btn');
@@ -379,5 +390,6 @@ async function loadManifest() {
         if(drawQuestionBtn) drawQuestionBtn.disabled = true;
         if(drawDareBtn) drawDareBtn.disabled = true;
         if(drawPunishmentBtn) drawPunishmentBtn.disabled = true;
+        console.log("Draw buttons explicitly disabled due to manifest load error. manifestLoaded = false");
     }
 }

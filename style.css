@@ -383,26 +383,27 @@ header h1 {
 
 /* Specific colors for each button */
 #draw-question-btn {
-    background-color: #17a2b8; /* Info Blue */
+    background-color: #FFEB3B; /* Vibrant Yellow */
+    color: #333; /* Dark text for yellow background */
 }
-#draw-question-btn:hover {
-    background-color: #138496;
+#draw-question-btn:not(:disabled):hover {
+    background-color: #fdd835; /* Slightly darker yellow */
 }
 
 #draw-dare-btn {
-    background-color: #fd7e14; /* Orange (already used for next-round, maybe a diff shade?) */
-                               /* Using a slightly different orange for dares */
-    background-color: #ff8c00; /* DarkOrange */
+    background-color: #FF9800; /* Strong Orange */
+    color: white; /* White text for orange background */
 }
-#draw-dare-btn:hover {
-    background-color: #cc7000;
+#draw-dare-btn:not(:disabled):hover {
+    background-color: #f57c00; /* Slightly darker orange */
 }
 
 #draw-punishment-btn {
-    background-color: #dc3545; /* Danger Red */
+    background-color: #F44336; /* Clear Red */
+    color: white; /* White text for red background */
 }
-#draw-punishment-btn:hover {
-    background-color: #c82333;
+#draw-punishment-btn:not(:disabled):hover {
+    background-color: #d32f2f; /* Slightly darker red */
 }
 
 .draw-category-btn:disabled {
@@ -416,6 +417,10 @@ header h1 {
 .draw-category-btn:disabled i {
     color: #999; /* Ensure icon color also changes when disabled */
 }
+.draw-category-btn:disabled i { /* Ensure icon color is also explicitly set for disabled state */
+    color: #999 !important;
+}
+
 
 .card-back p {
     font-family: 'Montserrat', sans-serif;
