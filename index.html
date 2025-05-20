@@ -13,6 +13,12 @@
         <h1>Hot Ones Challenge</h1>
     </header>
 
+    <div id="game-status">
+        <p>Round: <span id="current-round-display">1</span>/9</p>
+        <p>Current Sauce: <span id="current-sauce-display">Mild Jalapeño Zing</span></p>
+        <button id="next-round-btn">Next Round</button>
+    </div>
+
     <div id="language-selector">
         <button id="btn-en" class="lang-btn active">English</button>
         <button id="btn-it" class="lang-btn">Italiano</button>
@@ -26,7 +32,9 @@
                 <p id="card-category-text">Category</p>
             </div>
             <div class="card-face card-back">
-                <p id="card-detail-text">Actual question or dare</p>
+                <div id="card-detail-text-container">
+                    <!-- Content (paragraph or list) will be injected here by script.js -->
+                </div>
                 <i class="fas fa-pepper-hot"></i> <!-- Styling is in style.css -->
             </div>
         </div>
@@ -36,6 +44,7 @@
 
     <section id="add-card-section">
         <h2>Add Your Own Card</h2>
+        <p class="form-description">To add multiple questions/prompts on a single card (especially for 'Question' category), you can create a bulleted list directly in the text areas below using hyphens (-) or asterisks (*). Each new line starting with - or * will be treated as a separate item when displayed.</p>
         <form id="add-card-form">
             <div>
                 <label for="category">Category:</label>

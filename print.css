@@ -17,6 +17,7 @@ header,
 #language-selector,
 #draw-card-btn,
 #add-card-section,
+#game-status, /* Added to hide game status (round/sauce) when printing */
 body > script { /* Hide script tags themselves, though they don't print content */
   display: none !important;
 }
@@ -71,13 +72,35 @@ body > script { /* Hide script tags themselves, though they don't print content 
 }
 
 /* Card Content Styling for Print */
-.card-back #card-detail-text {
+#card-detail-text-container {
+  padding: 5px; /* Padding for the container */
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  text-align: center; /* Center single paragraphs */
+}
+
+#card-detail-text-container p {
   font-size: 10pt !important;
   color: #000 !important;
-  text-align: center;
-  padding: 5px; /* Add some padding if needed */
+  margin: 0;
+  line-height: 1.3;
+}
+
+#card-detail-text-container ul {
+  list-style-type: disc !important; /* Ensure basic bullets for print */
+  margin: 0;
+  padding-left: 15px !important; /* Adjust indentation for print */
+  text-align: left !important; /* Left-align list items */
   max-width: 100%;
-  overflow-wrap: break-word; /* Ensure long words break */
+}
+
+#card-detail-text-container li {
+  font-size: 9pt !important; /* Slightly smaller for list items if needed */
+  color: #000 !important;
+  line-height: 1.2;
+  margin-bottom: 3px !important; /* Tighter spacing for print */
+  overflow-wrap: break-word;
 }
 
 .card-back .fas.fa-pepper-hot { /* Targeting the pepper icon */

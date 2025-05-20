@@ -29,6 +29,62 @@ header h1 {
     text-transform: uppercase;
 }
 
+/* Game Status Display Styling */
+#game-status {
+    background-color: #1a1a1a; /* Darker than form, but lighter than body */
+    padding: 15px 20px;
+    margin: 20px auto; /* Centered, with vertical margin */
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px; /* Max width for the status display */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    text-align: center;
+}
+
+#game-status p {
+    font-family: 'Montserrat', sans-serif;
+    color: #ddd; /* Light gray text */
+    font-size: 1.1em;
+    margin: 8px 0;
+}
+
+#game-status p span {
+    font-weight: bold;
+    color: #ff6347; /* Orange-red for emphasis, matches active lang button */
+}
+
+#next-round-btn {
+    font-family: 'Lilita One', cursive;
+    background-color: #FFA500; /* Orange, distinct from other buttons */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+}
+
+#next-round-btn:hover {
+    background-color: #cc8400; /* Darker orange on hover */
+}
+
+#next-round-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+#next-round-btn:disabled {
+    background-color: #555; /* Gray when disabled */
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
 /* Language Selector Styling */
 #language-selector { /* ID updated from #language-selection */
     margin: 20px 0;
@@ -138,6 +194,15 @@ header h1 {
     text-align: center;
 }
 
+#add-card-section .form-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+    color: #ccc; /* Lighter gray for less emphasis than labels */
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: left;
+}
+
 #add-card-form div {
     margin-bottom: 15px;
     display: flex;
@@ -235,6 +300,37 @@ header h1 {
     font-family: 'Montserrat', sans-serif;
     font-size: 1.1em; /* Readable question text */
     line-height: 1.6;
+    margin: 0; /* Reset margin for p elements directly in card-back if any */
+}
+
+/* Styling for lists within the card back text container */
+#card-detail-text-container ul {
+    list-style-type: disc; /* Standard disc bullets */
+    margin: 0;
+    padding-left: 20px; /* Indentation for bullets */
+    text-align: left; /* Align list items to the left */
+    max-width: 100%;
+}
+
+#card-detail-text-container li {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.0em; /* Slightly smaller if multiple items, or keep 1.1em */
+    line-height: 1.5;
+    color: #333; /* Match paragraph text color */
+    margin-bottom: 8px; /* Space between list items */
+}
+
+#card-detail-text-container li:last-child {
+    margin-bottom: 0; /* No margin for the last item */
+}
+
+/* Ensure paragraphs within the container also follow similar font settings */
+#card-detail-text-container p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #333;
+    margin: 0; /* Reset margin for p elements within the container */
 }
 
 
