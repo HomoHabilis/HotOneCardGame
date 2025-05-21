@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentRoundDisplay.textContent = currentRound;
         }
         
-        if (timeLeftDisplay) { // Ensure this is updated on initial load too
+        if (timeLeftDisplay) { 
             timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
         }
 
@@ -69,17 +69,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextRoundButton.textContent = "Game Over!";
                 nextRoundButton.disabled = true;
                 roundTimerInput.disabled = true;
-            } else if (timerInterval !== null) { // Timer is running
+            } else if (timerInterval !== null) { 
                 nextRoundButton.textContent = `Round ${currentRound} In Progress...`;
                 nextRoundButton.disabled = true;
                 roundTimerInput.disabled = true;
-            } else { // Timer not running, ready to start a round
+            } else { 
                 if (currentRound === MAX_ROUNDS) {
                     nextRoundButton.textContent = "Start Final Round";
                 } else if (currentRound > 1) {
                     nextRoundButton.textContent = `Start Round ${currentRound}`;
                 } else {
-                    nextRoundButton.textContent = "Start Round"; // Initial state for round 1
+                    nextRoundButton.textContent = "Start Round"; 
                 }
                 nextRoundButton.disabled = false;
                 roundTimerInput.disabled = false;
@@ -87,34 +87,72 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to set initial messages on the card
+    function setInitialCardMessages() {
+        const localCardFrontIcon = document.getElementById('card-category-icon');
+        const localCardFrontText = document.getElementById('card-category-text');
+        const localDetailTextContainer = document.getElementById('card-detail-text-container');
+
+        if (localCardFrontIcon) localCardFrontIcon.className = 'fas fa-dice fa-3x'; // Example: dice icon
+        if (localCardFrontText) localCardFrontText.textContent = "Game Ready";
+        if (localDetailTextContainer) localDetailTextContainer.innerHTML = '<p>Click "Start Round" to begin!</p>';
+        console.log("Initial card messages set.");
+    }
+
     // Function to update the card display
     function updateCardDisplay() {
+        console.log("updateCardDisplay called. currentCard:", currentCard); 
+        
+        const cardFrontIconElem = document.getElementById('card-category-icon');
+        const cardFrontTextElem = document.getElementById('card-category-text');
+        const detailTextContainerElem = document.getElementById('card-detail-text-container');
+        // const cardBackIconElem = document.querySelector('.card-back .fa-pepper-hot'); // Not directly modified here unless category indicates
+
+        // Explicitly Clear Old Content
+        if (cardFrontIconElem) cardFrontIconElem.className = 'fas fa-3x'; // Base classes for Font Awesome
+        if (cardFrontTextElem) cardFrontTextElem.textContent = '';
+        if (detailTextContainerElem) detailTextContainerElem.innerHTML = ''; 
+
         if (!currentCard) {
-            if (cardCategoryText) cardCategoryText.textContent = 'No card';
-            if (cardDetailTextContainer) {
-                cardDetailTextContainer.innerHTML = '<p>Draw a card to start!</p>';
+            if (cardFrontTextElem) cardFrontTextElem.textContent = 'No Card Data';
+            if (detailTextContainerElem) {
+                detailTextContainerElem.innerHTML = '<p>Please draw a card.</p>';
             }
-            if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-question-circle fa-3x';
+            // Keep a default icon if no card
+            if (cardFrontIconElem) cardFrontIconElem.classList.add('fa-question-circle');
+            console.log("updateCardDisplay: currentCard is null, showing 'No Card Data'.");
             return;
         }
-        // Icon update using categoryIcons
-        if (cardCategoryIcon && currentCard && currentCard.category) {
-            cardCategoryIcon.className = categoryIcons[currentCard.category] + ' fa-3x'; 
+
+        // Set new content based on currentCard
+        if (cardFrontIconElem && currentCard.category && categoryIcons[currentCard.category]) {
+            // Robustly add icon classes
+            const iconClasses = categoryIcons[currentCard.category].split(' ');
+            iconClasses.forEach(iconClass => {
+                if (iconClass !== 'fas' && iconClass !== 'fa-3x') { // Avoid duplicating base classes
+                    cardFrontIconElem.classList.add(iconClass);
+                }
+            });
+            console.log("Set front icon to:", cardFrontIconElem.className);
+        } else if (cardFrontIconElem) { // Fallback icon if category or icon not found
+             cardFrontIconElem.classList.add('fa-question-circle');
         }
-        // Category text on card front:
-        if (cardCategoryText && currentCard && currentCard.category) {
-            cardCategoryText.textContent = currentCard.category.charAt(0).toUpperCase() + currentCard.category.slice(1);
+
+        if (cardFrontTextElem && currentCard.category) {
+            cardFrontTextElem.textContent = currentCard.category.charAt(0).toUpperCase() + currentCard.category.slice(1);
+            console.log("Set front text to:", cardFrontTextElem.textContent);
         }
-        if (cardDetailTextContainer) {
+
+        if (detailTextContainerElem) {
             const content = currentCard.text[currentLanguage];
-            cardDetailTextContainer.innerHTML = '';
             const p = document.createElement('p');
-            if (content && content.trim() !== '') {
+            if (content && typeof content === 'string' && content.trim() !== '') {
                 p.textContent = content;
             } else {
                 p.textContent = "No details available for this language.";
             }
-            cardDetailTextContainer.appendChild(p);
+            detailTextContainerElem.appendChild(p);
+            console.log("Set back text to:", p.textContent);
         }
     }
     
@@ -131,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function drawCategorizedCard(category) {
+        console.log(`drawCategorizedCard called with category: ${category}`); // Log
         // Check for undrawn session-added cards first
         const undrawnSessionCards = sessionAddedCards[category].filter(card => !card.drawn);
         if (undrawnSessionCards.length > 0) {
@@ -141,12 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: category,
                 isSessionCard: true 
             };
+            console.log("currentCard updated (session):", currentCard); // Log
             
             // Standard card display logic
             if (card && card.classList.contains('is-flipped')) { // Check if card element exists
                  card.classList.remove('is-flipped');
+                 console.log("Calling updateCardDisplay for session card (flipped)"); // Log
                  setTimeout(updateCardDisplay, 300);
             } else {
+                console.log("Calling updateCardDisplay for session card"); // Log
                 updateCardDisplay();
             }
             console.log("Drew a session-added card:", currentCard);
@@ -182,23 +224,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardPath = availablePaths[randomIndex];
 
         try {
+            console.log(`Fetching card: ${cardPath}`); // Log
             const response = await fetch(cardPath);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} for ${cardPath}`);
             }
             const cardFileData = await response.json();
+            console.log("Card file data fetched:", cardFileData); // Log
             
             currentCard = { 
                 text: cardFileData.text,
                 category: category,
                 isSessionCard: false // Mark as not a session card
             };
+            console.log("currentCard updated (manifest):", currentCard); // Log
             drawnCardPaths[category].push(cardPath); 
 
             if (card && card.classList.contains('is-flipped')) { // Check if card element exists
                  card.classList.remove('is-flipped');
+                 console.log("Calling updateCardDisplay for manifest card (flipped)"); // Log
                  setTimeout(updateCardDisplay, 300); 
             } else {
+                console.log("Calling updateCardDisplay for manifest card"); // Log
                 updateCardDisplay();
             }
             console.log(`Drawn card from manifest: ${cardPath}, Lang: ${currentLanguage}, Round: ${currentRound}`);
@@ -295,12 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
 
             // Enable categorized draw buttons when timer starts, only if manifest is loaded
+            console.log("Attempting to enable draw buttons. Manifest loaded:", manifestLoaded); // Log
             if (manifestLoaded) {
                 if(drawQuestionBtn) drawQuestionBtn.disabled = false;
                 if(drawDareBtn) drawDareBtn.disabled = false;
                 if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
             } else {
-                console.warn("Timer started, but manifest not yet loaded. Draw buttons remain disabled.");
+                console.warn("Manifest not loaded, draw buttons remain disabled."); // Log (already here, good)
             }
 
             timerInterval = setInterval(() => {
@@ -355,9 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGameStatusDisplay(); // Set up initial round text, button state, and timer display
     // Do not draw a card initially until "Start Round" is clicked for the first time.
     // So, clear placeholder card content if any
-    if (cardCategoryText) cardCategoryText.textContent = 'Game Ready';
-    if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Click "Start Round" to begin!</p>';
-    if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-hourglass-start fa-3x';
+    setInitialCardMessages(); // Call the new function to set initial messages
 
     loadManifest(); // Load the card manifest on script load
 });
