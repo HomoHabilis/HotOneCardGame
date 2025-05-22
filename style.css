@@ -246,8 +246,17 @@ header h1 {
     text-transform: uppercase;
     transition: background-color 0.3s ease, transform 0.1s ease;
     box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-    min-width: 160px; 
+    min-width: 180px; /* Adjusted min-width to accommodate icon and text */
+    display: inline-flex; /* To align icon and text */
+    align-items: center;   /* Vertically center icon and text */
+    justify-content: center; /* Horizontally center icon and text */
 }
+
+.category-draw-btn i {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 1em;  /* Keep icon size relative to button text */
+}
+
 
 .category-draw-btn:hover {
     opacity: 0.9;
@@ -285,6 +294,9 @@ header h1 {
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
+}
+.category-draw-btn:disabled i {
+    color: #999; /* Ensure icon also greys out */
 }
 
 
@@ -412,19 +424,18 @@ header h1 {
     text-align: center;
 }
 
-.game-over-card .card-front i { /* Style for the trophy icon */
+.game-over-card .card-front i { 
     color: #FFD700 !important; 
     margin-bottom: 15px; 
 }
 
-/* Apply Game Over text styles to placeholder elements if card is in game-over state */
 .game-over-card #card-category-text { 
     font-family: 'Lilita One', cursive;
-    font-size: 2.5em !important; /* Adjusted for placeholder which uses P tag */
+    font-size: 2.5em !important; 
     color: #FFD700 !important;
     margin-top: 0; 
 }
-.game-over-card #card-detail-text-container p { /* For "GAME FINISHED!"/"Select Category" text */
+.game-over-card #card-detail-text-container p { 
     font-family: 'Lilita One', cursive;
     font-size: 2.5em !important;
     color: #FFD700 !important;
