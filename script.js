@@ -351,6 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn("Manifest not loaded, draw buttons remain disabled."); // Log (already here, good)
             }
 
+            timeLeft_seconds = roundTimerDuration_seconds; // Initialize timeLeft_seconds
+            updateGameStatusDisplay(); // Set up initial round text, button state, and timer display
+            // Do not draw a card initially until "Start Round" is clicked for the first time.
+            // So, clear placeholder card content if any
+            setInitialCardMessages(); // Call the new function to set initial messages
+
+            loadManifest(); // Load the card manifest on script load
+            
             timerInterval = setInterval(() => {
                 timeLeft_seconds--;
                 if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
@@ -398,14 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Setup
     const initialActiveButton = document.getElementById(`btn-${currentLanguage}`);
     if (initialActiveButton) initialActiveButton.classList.add('active');
-    
-    timeLeft_seconds = roundTimerDuration_seconds; // Initialize timeLeft_seconds
-    updateGameStatusDisplay(); // Set up initial round text, button state, and timer display
-    // Do not draw a card initially until "Start Round" is clicked for the first time.
-    // So, clear placeholder card content if any
-    setInitialCardMessages(); // Call the new function to set initial messages
-
-    loadManifest(); // Load the card manifest on script load
 });
 
 async function loadManifest() {
