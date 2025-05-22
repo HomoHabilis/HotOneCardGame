@@ -63,7 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval = null;
     let timeLeft_seconds = roundTimerDuration_seconds;
 
-    // Helper Function to format time
+    // Helper function to get icon class based on category
+    function getIconForCategory(category) {
+        switch (category) {
+            case 'question': return 'fas fa-question-circle';
+            case 'dare': return 'fas fa-fire';
+            case 'punishment': return 'fas fa-bomb';
+            default: return 'fas fa-question-circle'; // Default icon
+        }
+    }
+
     function formatTime(totalSeconds) {
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
@@ -79,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to update card display with a placeholder message
     function updateCardDisplayWithPlaceholder(message, iconClass = 'fas fa-hand-pointer fa-3x') {
-        currentCard = null; // Ensure currentCard is null for placeholder
-        if (cardCategoryIcon) cardCategoryIcon.className = iconClass;
+        currentCard = null; 
+        if (cardCategoryIcon) cardCategoryIcon.className = `${iconClass} fa-3x`; // Ensure fa-3x is maintained
         if (cardCategoryText) cardCategoryText.textContent = 'Awaiting Action';
         if (cardDetailTextContainer) {
             cardDetailTextContainer.innerHTML = `<p>${message}</p>`;
@@ -147,10 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to update the card display (actual card content)
     function updateCardDisplay() {
         if (!currentCard) {
-            updateCardDisplayWithPlaceholder("No card selected or an error occurred.", "fas fa-border-all fa-3x");
+            updateCardDisplayWithPlaceholder("No card selected or an error occurred.", "fas fa-border-all");
             return;
         }
-        if (cardCategoryIcon) cardCategoryIcon.className = `${currentCard.icon} fa-3x`;
+        // Get icon based on category
+        const iconClass = getIconForCategory(currentCard.category);
+        if (cardCategoryIcon) cardCategoryIcon.className = `${iconClass} fa-3x`; // Apply determined icon
+
         if (cardCategoryText) {
             const category = currentCard.category;
             cardCategoryText.textContent = category.charAt(0).toUpperCase() + category.slice(1);
@@ -171,14 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function drawNewCard(categoryToDraw) {
         if (typeof cardData === 'undefined' || cardData.length === 0) {
-            updateCardDisplayWithPlaceholder("No card data loaded.", "fas fa-exclamation-triangle fa-3x");
+            updateCardDisplayWithPlaceholder("No card data loaded.", "fas fa-exclamation-triangle");
             return;
         }
 
         const categorySpecificCards = cardData.filter(card => card.category === categoryToDraw);
 
         if (categorySpecificCards.length === 0) {
-            updateCardDisplayWithPlaceholder(`No cards available for the '${categoryToDraw}' category.`, 'fas fa-box-open fa-3x');
+            updateCardDisplayWithPlaceholder(`No cards available for the '${categoryToDraw}' category.`, 'fas fa-box-open');
             if (card && card.classList.contains('is-flipped')) {
                 card.classList.remove('is-flipped');
             }
@@ -195,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (availableCards.length === 0) {
-             updateCardDisplayWithPlaceholder(`Could not draw a new card for '${categoryToDraw}'. All recycled.`, 'fas fa-sync-alt fa-3x');
+             updateCardDisplayWithPlaceholder(`Could not draw a new card for '${categoryToDraw}'. All recycled.`, 'fas fa-sync-alt');
              if (card && card.classList.contains('is-flipped')) {
                 card.classList.remove('is-flipped');
             }
@@ -265,16 +277,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const text_en_value = document.getElementById('text_en').value.trim();
             const text_it_value = document.getElementById('text_it').value.trim();
             const text_fr_value = document.getElementById('text_fr').value.trim();
-            let iconClass = '';
-            switch (category) {
-                case 'question': iconClass = 'fas fa-question-circle'; break;
-                case 'dare': iconClass = 'fas fa-fire'; break;
-                case 'punishment': iconClass = 'fas fa-bomb'; break;
-                default: iconClass = 'fas fa-question-circle';
-            }
+            
             const newId = (cardData.length > 0 ? Math.max(...cardData.map(c => c.id)) : 0) + 1;
             const newCard = {
-                id: newId, category: category, icon: iconClass,
+                id: newId, 
+                category: category, 
+                // icon: iconClass, // REMOVED
                 text: { en: text_en_value, it: text_it_value, fr: text_fr_value }
             };
             if (typeof cardData !== 'undefined') cardData.push(newCard);
@@ -302,8 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
             roundTimerDuration_seconds = (userDurationMinutes > 0 ? userDurationMinutes : 3) * 60;
             timeLeft_seconds = roundTimerDuration_seconds; // Reset time for the new/current round
 
-            drawnCardIds = []; // Reset drawn cards for the new round
-            updateCardDisplayWithPlaceholder("Select a card category to draw.", "fas fa-dice-d20 fa-3x");
+            drawnCardIds = []; 
+            updateCardDisplayWithPlaceholder("Select a card category to draw.", "fas fa-dice-d20");
             
             // Update timer display immediately to show full time
             if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
@@ -321,15 +329,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
 
                     if (currentRound < MAX_ROUNDS) {
-                        // Round ended, ready for "Start Round X+1" to be clicked.
-                        // currentRound is NOT incremented here. It increments when "Start Round X+1" is clicked.
-                        updateCardDisplayWithPlaceholder("Round Over! Click to Start Next Round.", "fas fa-hourglass-end fa-3x");
-
-                    } else { // MAX_ROUNDS reached and timer ended
+                        updateCardDisplayWithPlaceholder("Round Over! Click to Start Next Round.", "fas fa-hourglass-end");
+                    } else { 
                         console.log("Game Over - Final Round Ended!");
                         if(gameOverSound) gameOverSound.play().catch(e => console.error("Error playing sound:", e));
                         
-                        updateCardDisplayWithPlaceholder("GAME FINISHED!", "fas fa-trophy fa-3x");
+                        updateCardDisplayWithPlaceholder("GAME FINISHED!", "fas fa-trophy");
                         if (card) {
                             card.classList.add('game-over-card');
                             if (card.classList.contains('is-flipped')) {
@@ -363,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     timeLeft_seconds = roundTimerDuration_seconds;
-    updateCardDisplayWithPlaceholder("Click 'Start Round' to begin!", "fas fa-hourglass-start fa-3x");
+    updateCardDisplayWithPlaceholder("Click 'Start Round' to begin!", "fas fa-hourglass-start");
     updateGameStatusDisplay(); 
     // setCategoryDrawButtonsState(false); // This is handled by updateGameStatusDisplay now
 });

@@ -3,7 +3,6 @@ const cardData = [
   {
     id: 1,
     category: "question",
-    icon: "fas fa-question-circle",
     text: {
       en: "If you could relive one day of your life, which would it be and why?",
       it: "Se potessi rivivere un giorno della tua vita, quale sarebbe e perché?",
@@ -13,7 +12,6 @@ const cardData = [
   {
     id: 2,
     category: "question",
-    icon: "fas fa-question-circle",
     text: {
       en: "What quality do you value most in a friend?",
       it: "Quale qualità apprezzi di più in un amico?",
@@ -23,7 +21,6 @@ const cardData = [
   {
     id: 3,
     category: "question",
-    icon: "fas fa-question-circle",
     text: {
       en: "What does 'love' mean to you in its truest form?",
       it: "Cosa significa 'amore' per te nella sua forma più vera?",
@@ -34,7 +31,6 @@ const cardData = [
   {
     id: 4,
     category: "dare",
-    icon: "fas fa-fire",
     text: {
       en: "Sing the chorus of your favorite song out loud right now.",
       it: "Canta il ritornello della tua canzone preferita ad alta voce, adesso.",
@@ -44,7 +40,6 @@ const cardData = [
   {
     id: 5,
     category: "dare",
-    icon: "fas fa-fire",
     text: {
       en: "Do your best impression of a celebrity for 1 minute.",
       it: "Fai la tua migliore imitazione di una celebrità per 1 minuto.",
@@ -54,7 +49,6 @@ const cardData = [
   {
     id: 6,
     category: "dare",
-    icon: "fas fa-fire",
     text: {
       en: "Send a text to your crush (or a friend) saying 'I know your secret!'",
       it: "Invia un messaggio alla persona che ti piace (o a un amico) scrivendo 'Conosco il tuo segreto!'",
@@ -65,7 +59,6 @@ const cardData = [
   {
     id: 7,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat some sauce on a chip.",
       it: "Mangia un po' di salsa su una patatina.",
@@ -75,7 +68,6 @@ const cardData = [
   {
     id: 8,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a double dose of sauce on a chip.",
       it: "Mangia una doppia dose di salsa su una patatina.",
@@ -85,7 +77,6 @@ const cardData = [
   {
     id: 9,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
@@ -95,7 +86,6 @@ const cardData = [
   {
     id: 10,
     category: "question",
-    icon: "fas fa-question-circle", // Corrected icon
     text: {
       en: "When did you and Jaleh first kiss?",
       it: "Quando tu e Jaleh vi siete baciati per la prima volta?",
@@ -104,28 +94,25 @@ const cardData = [
   },
   {
     id: 11,
-    category: "punishment",
-    icon: "fas fa-bomb",
+    category: "question",
     text: {
       en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
+      it: "Hai mai baciato qualcuno in questo gruppo?",
       fr: "Mange une cuillerée de sauce."
     }
   },
   {
     id: 12,
-    category: "punishment",
-    icon: "fas fa-bomb",
+    category: "dare",
     text: {
       en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
+      it: "Descrivi la tua prima esperienza sessuale usando solo i tuoi gomiti",
       fr: "Mange une cuillerée de sauce."
     }
   },
   {
     id: 13,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
@@ -135,7 +122,6 @@ const cardData = [
   {
     id: 14,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
@@ -145,7 +131,6 @@ const cardData = [
   {
     id: 15,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
@@ -155,7 +140,6 @@ const cardData = [
   {
     id: 16,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
@@ -165,7 +149,6 @@ const cardData = [
   {
     id: 17,
     category: "punishment",
-    icon: "fas fa-bomb",
     text: {
       en: "Eat a spoonful of sauce.",
       it: "Mangia un cucchiaio di salsa.",
