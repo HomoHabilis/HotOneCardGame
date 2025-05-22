@@ -24,7 +24,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverSound = document.getElementById('game-over-sound');
 
     // Global State
-    let currentLanguage = 'en'; // Default language
+    let currentLanguage = 'en'; // Will be updated by determineInitialLanguage
+
+    // Function to determine and set initial language based on browser settings
+    function determineInitialLanguage() {
+        const supportedLanguages = ['en', 'it', 'fr'];
+        let bestMatch = 'en'; // Default
+
+        // navigator.languages provides an array of preferred languages (e.g., ["en-US", "en"])
+        if (navigator.languages && navigator.languages.length) {
+            for (const langFull of navigator.languages) {
+                const baseLang = langFull.split('-')[0].toLowerCase(); // "en-US" -> "en"
+                if (supportedLanguages.includes(baseLang)) {
+                    bestMatch = baseLang;
+                    break; // Found the highest preferred supported language
+                }
+            }
+        } 
+        // Fallback to navigator.language if navigator.languages is not available
+        else if (navigator.language) {
+            const baseLang = navigator.language.split('-')[0].toLowerCase();
+            if (supportedLanguages.includes(baseLang)) {
+                bestMatch = baseLang;
+            }
+        }
+        console.log(`Browser languages: ${navigator.languages ? navigator.languages.join(', ') : navigator.language}. Detected game language: ${bestMatch}`);
+        return bestMatch;
+    }
+
+    currentLanguage = determineInitialLanguage(); // Set currentLanguage based on browser
+
     let currentCard = null;
     let drawnCardIds = []; // Tracks IDs of cards drawn in the current round
     let currentRound = 1;
@@ -321,8 +350,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial Setup
+    // Activate the language button corresponding to currentLanguage (which is now browser-detected or default)
+    languageButtons.forEach(btn => btn.classList.remove('active')); // Deactivate all first
     const initialActiveButton = document.getElementById(`btn-${currentLanguage}`);
-    if (initialActiveButton) initialActiveButton.classList.add('active');
+    if (initialActiveButton) {
+        initialActiveButton.classList.add('active');
+    } else {
+        // Fallback if the button for the detected language doesn't exist (shouldn't happen with 'en', 'it', 'fr')
+        document.getElementById('btn-en').classList.add('active');
+        currentLanguage = 'en'; // Ensure currentLanguage reflects this fallback
+        console.warn("Fallback to English language button as detected language button was not found.");
+    }
     
     timeLeft_seconds = roundTimerDuration_seconds;
     updateCardDisplayWithPlaceholder("Click 'Start Round' to begin!", "fas fa-hourglass-start fa-3x");
