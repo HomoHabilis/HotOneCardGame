@@ -349,15 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
 
             // Enable categorized draw buttons when timer starts, only if manifest is loaded
-            console.log("Attempting to enable draw buttons. Manifest loaded:", manifestLoaded); // Log
-            if (manifestLoaded) {
-                console.log("putting disable to false"); // Log
-                if(drawQuestionBtn) drawQuestionBtn.disabled = false;
-                if(drawDareBtn) drawDareBtn.disabled = false;
-                if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
-            } else {
-                console.warn("Manifest not loaded, draw buttons remain disabled."); // Log (already here, good)
-            }
 
             timerInterval = setInterval(() => {
                 timeLeft_seconds--;
@@ -366,11 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (timeLeft_seconds <= 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
-                    
-                    // Disable categorized draw buttons when timer ends
-                    if(drawQuestionBtn) drawQuestionBtn.disabled = false;
-                    if(drawDareBtn) drawDareBtn.disabled = false;
-                    if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
                     
                     if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
 
@@ -433,9 +419,6 @@ async function loadManifest() {
         const drawQuestionBtn = document.getElementById('draw-question-btn');
         const drawDareBtn = document.getElementById('draw-dare-btn');
         const drawPunishmentBtn = document.getElementById('draw-punishment-btn');
-        if(drawQuestionBtn) drawQuestionBtn.disabled = false;
-        if(drawDareBtn) drawDareBtn.disabled = false;
-        if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
         console.log("Draw buttons explicitly disabled due to manifest load error. manifestLoaded = false");
     }
 }
