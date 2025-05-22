@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCard = null;
     let drawnCardIds = []; // Tracks IDs of cards drawn in the current round
     let currentRound = 1;
-    const MAX_ROUNDS = 9;
+    const MAX_ROUNDS = 10;
 
     let roundTimerDuration_seconds = parseInt(roundTimerInput.value, 10) * 60;
     let timerInterval = null;
