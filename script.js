@@ -351,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Enable categorized draw buttons when timer starts, only if manifest is loaded
             console.log("Attempting to enable draw buttons. Manifest loaded:", manifestLoaded); // Log
             if (manifestLoaded) {
+                console.log("putting disable to false"); // Log
                 if(drawQuestionBtn) drawQuestionBtn.disabled = false;
                 if(drawDareBtn) drawDareBtn.disabled = false;
                 if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
