@@ -283,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
         drawPunishmentBtn.addEventListener('click', () => drawCategorizedCard('punishments'));
     }
 
-
     if (addCardForm) {
         addCardForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -368,9 +367,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     timerInterval = null;
                     
                     // Disable categorized draw buttons when timer ends
-                    if(drawQuestionBtn) drawQuestionBtn.disabled = true;
-                    if(drawDareBtn) drawDareBtn.disabled = true;
-                    if(drawPunishmentBtn) drawPunishmentBtn.disabled = true;
+                    if(drawQuestionBtn) drawQuestionBtn.disabled = false;
+                    if(drawDareBtn) drawDareBtn.disabled = false;
+                    if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
                     
                     if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
 
@@ -433,9 +432,9 @@ async function loadManifest() {
         const drawQuestionBtn = document.getElementById('draw-question-btn');
         const drawDareBtn = document.getElementById('draw-dare-btn');
         const drawPunishmentBtn = document.getElementById('draw-punishment-btn');
-        if(drawQuestionBtn) drawQuestionBtn.disabled = true;
-        if(drawDareBtn) drawDareBtn.disabled = true;
-        if(drawPunishmentBtn) drawPunishmentBtn.disabled = true;
+        if(drawQuestionBtn) drawQuestionBtn.disabled = false;
+        if(drawDareBtn) drawDareBtn.disabled = false;
+        if(drawPunishmentBtn) drawPunishmentBtn.disabled = false;
         console.log("Draw buttons explicitly disabled due to manifest load error. manifestLoaded = false");
     }
 }
