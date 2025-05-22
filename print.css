@@ -15,9 +15,9 @@ body {
 /* Hide Non-Printable Elements */
 header,
 #language-selector,
-#draw-card-btn,
+#draw-category-buttons, /* Updated from #draw-card-btn */
 #add-card-section,
-#game-status, /* Added to hide game status (round/sauce) when printing */
+#game-status,
 body > script { /* Hide script tags themselves, though they don't print content */
   display: none !important;
 }

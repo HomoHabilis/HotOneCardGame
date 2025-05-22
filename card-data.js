@@ -83,7 +83,87 @@ const cardData = [
     }
   },
   {
-    id: 9,
+    id: 9, // Was first id:9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 10,
+    category: "question",
+    icon: "fas fa-question-circle", // Corrected icon
+    text: {
+      en: "When did you and Jaleh first kiss?",
+      it: "Quando tu e Jaleh vi siete baciati per la prima volta?",
+      fr: "Quand as-tu embrassé Jaleh pour la première fois ?"
+    }
+  },
+  {
+    id: 11, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 12, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 13, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 14, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 15, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 16, // Corrected ID from 9
+    category: "punishment",
+    icon: "fas fa-bomb",
+    text: {
+      en: "Eat a spoonful of sauce.",
+      it: "Mangia un cucchiaio di salsa.",
+      fr: "Mange une cuillerée de sauce."
+    }
+  },
+  {
+    id: 17, // Corrected ID from 9
     category: "punishment",
     icon: "fas fa-bomb",
     text: {

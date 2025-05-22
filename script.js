@@ -5,8 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardCategoryText = document.getElementById('card-category-text');
     const cardDetailTextContainer = document.getElementById('card-detail-text-container');
     const languageButtons = document.querySelectorAll('#language-selector .lang-btn');
-    const drawCardButton = document.getElementById('draw-card-btn');
     const addCardForm = document.getElementById('add-card-form');
+
+    // Category Draw Buttons
+    const drawQuestionButton = document.getElementById('draw-question-btn');
+    const drawDareButton = document.getElementById('draw-dare-btn');
+    const drawPunishmentButton = document.getElementById('draw-punishment-btn');
 
     // Game Status DOM Elements
     const currentRoundDisplay = document.getElementById('current-round-display');
@@ -17,19 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Audio Elements
     const NextRoundSound = document.getElementById('round-start-sound');
     const roundEndSound = document.getElementById('round-end-sound');
-    const gameOverSound = document.getElementById('game-over-sound'); // Will be used in a future step
+    const gameOverSound = document.getElementById('game-over-sound');
 
     // Global State
     let currentLanguage = 'en'; // Default language
     let currentCard = null;
-    let drawnCardIds = [];
+    let drawnCardIds = []; // Tracks IDs of cards drawn in the current round
     let currentRound = 1;
-    const MAX_ROUNDS = 9; // Max rounds remains 9 as per gameSauces length
-    const gameSauces = [ // Kept for potential future use or if sauce-per-round is re-introduced
-        "Mild Jalapeño Zing", "Spicy Serrano Kick", "Fiery Cayenne Blast",
-        "Habanero Hellfire", "Scotch Bonnet Scorch", "Ghost Pepper Phantom",
-        "Reaper's Touch", "Dragon's Breath Inferno", "The Final Combustion"
-    ];
+    const MAX_ROUNDS = 9;
 
     let roundTimerDuration_seconds = parseInt(roundTimerInput.value, 10) * 60;
     let timerInterval = null;
@@ -42,47 +41,84 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
+    // Helper function to manage category draw button states
+    function setCategoryDrawButtonsState(enabled) {
+        if (drawQuestionButton) drawQuestionButton.disabled = !enabled;
+        if (drawDareButton) drawDareButton.disabled = !enabled;
+        if (drawPunishmentButton) drawPunishmentButton.disabled = !enabled;
+    }
+    
+    // Function to update card display with a placeholder message
+    function updateCardDisplayWithPlaceholder(message, iconClass = 'fas fa-hand-pointer fa-3x') {
+        currentCard = null; // Ensure currentCard is null for placeholder
+        if (cardCategoryIcon) cardCategoryIcon.className = iconClass;
+        if (cardCategoryText) cardCategoryText.textContent = 'Awaiting Action';
+        if (cardDetailTextContainer) {
+            cardDetailTextContainer.innerHTML = `<p>${message}</p>`;
+        }
+        if (card && card.classList.contains('is-flipped')) {
+            card.classList.remove('is-flipped'); // Show the front with placeholder info
+        }
+        // Ensure the card isn't styled as game-over unless it actually is
+        if (card && !(currentRound === MAX_ROUNDS && timerInterval === null && timeLeft_seconds === 0)) {
+            card.classList.remove('game-over-card');
+        }
+    }
+
+
     // Function to update game status display
     function updateGameStatusDisplay() {
         if (currentRoundDisplay) {
             currentRoundDisplay.textContent = currentRound;
         }
         
-        if (timeLeftDisplay) { // Ensure this is updated on initial load too
+        if (timeLeftDisplay) {
             timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
         }
 
         if (nextRoundButton) {
+            // Condition 1: Game Over (Final round ended, timer is null, time is 0)
             if (currentRound === MAX_ROUNDS && timerInterval === null && timeLeft_seconds === 0) {
                 nextRoundButton.textContent = "Game Over!";
                 nextRoundButton.disabled = true;
                 roundTimerInput.disabled = true;
-            } else if (timerInterval !== null) { // Timer is running
+                setCategoryDrawButtonsState(false);
+            } 
+            // Condition 2: Timer is currently running (Round in Progress)
+            else if (timerInterval !== null) { 
                 nextRoundButton.textContent = `Round ${currentRound} In Progress...`;
                 nextRoundButton.disabled = true;
                 roundTimerInput.disabled = true;
-            } else { // Timer not running, ready to start a round
-                if (currentRound === MAX_ROUNDS) {
-                    nextRoundButton.textContent = "Start Final Round";
-                } else if (currentRound > 1) {
+                setCategoryDrawButtonsState(true);
+            } 
+            // Condition 3: Timer NOT running (Between rounds, or before game start, or game over but not final round explicit end)
+            else { 
+                if (currentRound > MAX_ROUNDS) { // Game is truly over (e.g., if logic somehow bypassed above)
+                     nextRoundButton.textContent = "Game Over";
+                     nextRoundButton.disabled = true;
+                     roundTimerInput.disabled = true;
+                } else if (currentRound === MAX_ROUNDS && timeLeft_seconds > 0) { // Waiting to start final round (e.g., just finished round 8)
+                     nextRoundButton.textContent = "Start Final Round";
+                     nextRoundButton.disabled = false;
+                     roundTimerInput.disabled = false;
+                } else if (currentRound > 1) { // Between rounds (e.g., finished round 1, ready for round 2)
                     nextRoundButton.textContent = `Start Round ${currentRound}`;
-                } else {
-                    nextRoundButton.textContent = "Start Round"; // Initial state for round 1
+                    nextRoundButton.disabled = false;
+                    roundTimerInput.disabled = false;
+                } else { // Before Round 1 starts
+                    nextRoundButton.textContent = "Start Round";
+                    nextRoundButton.disabled = false;
+                    roundTimerInput.disabled = false;
                 }
-                nextRoundButton.disabled = false;
-                roundTimerInput.disabled = false;
+                setCategoryDrawButtonsState(false); // Disable draw buttons when round is not actively running
             }
         }
     }
 
-    // Function to update the card display
+    // Function to update the card display (actual card content)
     function updateCardDisplay() {
         if (!currentCard) {
-            if (cardCategoryText) cardCategoryText.textContent = 'No card';
-            if (cardDetailTextContainer) {
-                cardDetailTextContainer.innerHTML = '<p>Draw a card to start!</p>';
-            }
-            if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-question-circle fa-3x';
+            updateCardDisplayWithPlaceholder("No card selected or an error occurred.", "fas fa-border-all fa-3x");
             return;
         }
         if (cardCategoryIcon) cardCategoryIcon.className = `${currentCard.icon} fa-3x`;
@@ -92,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (cardDetailTextContainer) {
             const content = currentCard.text[currentLanguage];
-            cardDetailTextContainer.innerHTML = '';
+            cardDetailTextContainer.innerHTML = ''; 
             const p = document.createElement('p');
             if (content && content.trim() !== '') {
                 p.textContent = content;
@@ -101,74 +137,97 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             cardDetailTextContainer.appendChild(p);
         }
+         if (card) card.classList.remove('game-over-card'); // Ensure regular card display
     }
     
-    // GAME FLOW NOTE (from user feedback):
-    // While "Punishment" cards can be drawn like any other card using this function,
-    // the intended game flow is typically:
-    // 1. A player draws a "Question" or "Dare" card.
-    // 2. If the player fails to answer/perform satisfactorily or refuses,
-    //    then a "Punishment" card is drawn (or a specific punishment is applied).
-    // This function doesn't enforce that specific flow but provides the cards.
-    function drawNewCard() {
+    function drawNewCard(categoryToDraw) {
         if (typeof cardData === 'undefined' || cardData.length === 0) {
-            if (cardCategoryText) cardCategoryText.textContent = "Error";
-            if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = "<p>No card data loaded.</p>";
-            if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-exclamation-triangle fa-3x';
+            updateCardDisplayWithPlaceholder("No card data loaded.", "fas fa-exclamation-triangle fa-3x");
             return;
         }
-        if (drawnCardIds.length === cardData.length) {
-            drawnCardIds = [];
-        }
-        let selectedCard;
-        let attempts = 0;
-        do {
-            const randomIndex = Math.floor(Math.random() * cardData.length);
-            selectedCard = cardData[randomIndex];
-            attempts++;
-            if (attempts > cardData.length * 2 && cardData.length > 0) {
-                console.warn("Could not find an undrawn card. Resetting drawn list.");
-                drawnCardIds = [];
-                break;
+
+        const categorySpecificCards = cardData.filter(card => card.category === categoryToDraw);
+
+        if (categorySpecificCards.length === 0) {
+            updateCardDisplayWithPlaceholder(`No cards available for the '${categoryToDraw}' category.`, 'fas fa-box-open fa-3x');
+            if (card && card.classList.contains('is-flipped')) {
+                card.classList.remove('is-flipped');
             }
-        } while (drawnCardIds.includes(selectedCard.id) && cardData.length > drawnCardIds.length);
-        currentCard = selectedCard;
+            return;
+        }
+
+        let availableCards = categorySpecificCards.filter(card => !drawnCardIds.includes(card.id));
+
+        if (availableCards.length === 0) {
+            console.log(`All cards of category '${categoryToDraw}' drawn in this round. Resetting for this category.`);
+            const idsOfThisCategory = categorySpecificCards.map(card => card.id);
+            drawnCardIds = drawnCardIds.filter(id => !idsOfThisCategory.includes(id));
+            availableCards = categorySpecificCards.filter(card => !drawnCardIds.includes(card.id)); 
+        }
+        
+        if (availableCards.length === 0) {
+             updateCardDisplayWithPlaceholder(`Could not draw a new card for '${categoryToDraw}'. All recycled.`, 'fas fa-sync-alt fa-3x');
+             if (card && card.classList.contains('is-flipped')) {
+                card.classList.remove('is-flipped');
+            }
+             return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableCards.length);
+        currentCard = availableCards[randomIndex];
         drawnCardIds.push(currentCard.id);
+
         if (card && card.classList.contains('is-flipped')) {
             card.classList.remove('is-flipped');
-            setTimeout(updateCardDisplay, 300);
+            setTimeout(updateCardDisplay, 300); 
         } else {
             updateCardDisplay();
         }
-        console.log(`Drawn card ID: ${currentCard.id}, Lang: ${currentLanguage}, Round: ${currentRound}`);
+        console.log(`Drawn card ID: ${currentCard.id} (Category: ${categoryToDraw}), Lang: ${currentLanguage}, Round: ${currentRound}`);
     }
 
     if (card) {
-        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+        card.addEventListener('click', () => {
+            if (currentCard) { 
+                card.classList.toggle('is-flipped');
+            } else {
+                console.log("No card content to flip to. Please draw a card.");
+            }
+        });
     }
+
 
     languageButtons.forEach(button => {
         button.addEventListener('click', () => {
             languageButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentLanguage = button.id.split('-')[1];
-            if (currentCard) updateCardDisplay();
+            if (currentCard) updateCardDisplay(); 
         });
     });
 
-    if (drawCardButton) {
-        drawCardButton.addEventListener('click', () => {
-            if (timerInterval === null && currentRound <= MAX_ROUNDS) { // Only allow drawing if timer not running or game not over
-                 alert("Please start the round before drawing a new card.");
-                 return;
-            }
-            if (timerInterval !== null) { // Timer is running
-                drawNewCard();
-            } else {
-                alert("The game/round has not started or is over.");
-            }
-        });
+    function handleDrawCategoryClick(category) {
+        if (timerInterval === null && currentRound <= MAX_ROUNDS) {
+             alert("Please start the round before drawing a card.");
+             return;
+        }
+        if (timerInterval !== null) { 
+            drawNewCard(category);
+        } else {
+            alert("The game/round has not started or is over.");
+        }
     }
+
+    if (drawQuestionButton) {
+        drawQuestionButton.addEventListener('click', () => handleDrawCategoryClick('question'));
+    }
+    if (drawDareButton) {
+        drawDareButton.addEventListener('click', () => handleDrawCategoryClick('dare'));
+    }
+    if (drawPunishmentButton) {
+        drawPunishmentButton.addEventListener('click', () => handleDrawCategoryClick('punishment'));
+    }
+
 
     if (addCardForm) {
         addCardForm.addEventListener('submit', (event) => {
@@ -197,77 +256,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // "Start Round" Button Event Listener (formerly Next Round)
     if (nextRoundButton) {
         nextRoundButton.addEventListener('click', () => {
-            if (timerInterval !== null)
-            {
-                return; // Timer already running
-            }
-            else
-            {
-                if(NextRoundSound) NextRoundSound.play().catch(e => console.error("Error playing sound:", e));
+            if (timerInterval !== null) { // Prevent starting if already running
+                return; 
             }
 
-            // If previous round ended and we are starting the next one
+            if (NextRoundSound) NextRoundSound.play().catch(e => console.error("Error playing sound:", e));
+            
+            // Advance round if previous round ended naturally (time ran out)
             if (timeLeft_seconds === 0 && currentRound < MAX_ROUNDS) {
-                 currentRound++; // Advance to the next round
+                 currentRound++; 
             }
             
             const userDurationMinutes = parseInt(roundTimerInput.value, 10);
             roundTimerDuration_seconds = (userDurationMinutes > 0 ? userDurationMinutes : 3) * 60;
-            timeLeft_seconds = roundTimerDuration_seconds;
+            timeLeft_seconds = roundTimerDuration_seconds; // Reset time for the new/current round
 
             drawnCardIds = []; // Reset drawn cards for the new round
-            updateGameStatusDisplay(); // Update display for the current/new round
-            drawNewCard(); // Draw the first card of the round
-
+            updateCardDisplayWithPlaceholder("Select a card category to draw.", "fas fa-dice-d20 fa-3x");
+            
+            // Update timer display immediately to show full time
             if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
-            roundTimerInput.disabled = true;
-            nextRoundButton.disabled = true; // Will be re-enabled by updateGameStatusDisplay after timer
-            updateGameStatusDisplay(); // Call again to set button text to "Round X In Progress..."
 
+            // Start the interval and assign its ID to timerInterval
             timerInterval = setInterval(() => {
                 timeLeft_seconds--;
                 if (timeLeftDisplay) timeLeftDisplay.textContent = formatTime(timeLeft_seconds);
 
                 if (timeLeft_seconds <= 0) {
                     clearInterval(timerInterval);
-                    timerInterval = null;
+                    timerInterval = null; // IMPORTANT: Set to null before calling updateGameStatusDisplay
+                                        // so it knows the timer has stopped for this round.
                     
                     if(roundEndSound) roundEndSound.play().catch(e => console.error("Error playing sound:", e));
 
                     if (currentRound < MAX_ROUNDS) {
-                        // Ready for the next round to be started
-                        // currentRound is NOT incremented here; it increments when "Start Round X+1" is clicked.
+                        // Round ended, ready for "Start Round X+1" to be clicked.
+                        // currentRound is NOT incremented here. It increments when "Start Round X+1" is clicked.
+                        updateCardDisplayWithPlaceholder("Round Over! Click to Start Next Round.", "fas fa-hourglass-end fa-3x");
+
                     } else { // MAX_ROUNDS reached and timer ended
                         console.log("Game Over - Final Round Ended!");
                         if(gameOverSound) gameOverSound.play().catch(e => console.error("Error playing sound:", e));
                         
-                        // Enhance "Game Finished" sequence:
-                        const cardFrontIcon = document.getElementById('card-category-icon');
-                        const cardFrontText = document.getElementById('card-category-text');
-                        const cardDetailContainer = document.getElementById('card-detail-text-container');
-                        const cardElement = document.querySelector('.card');
-
-                        if (cardFrontIcon) cardFrontIcon.className = 'fas fa-trophy fa-3x'; // Trophy icon for game over
-                        if (cardFrontText) cardFrontText.textContent = 'GAME';
-                        if (cardDetailContainer) cardDetailContainer.innerHTML = '<p>FINISHED!</p>';
-                        
-                        if (cardElement) {
-                            cardElement.classList.add('game-over-card');
-                            if (cardElement.classList.contains('is-flipped')) {
-                                cardElement.classList.remove('is-flipped');
+                        updateCardDisplayWithPlaceholder("GAME FINISHED!", "fas fa-trophy fa-3x");
+                        if (card) {
+                            card.classList.add('game-over-card');
+                            if (card.classList.contains('is-flipped')) {
+                                 card.classList.remove('is-flipped');
                             }
-                            // Optional: Remove click listener to prevent flipping
-                            // cardElement.removeEventListener('click', cardFlipHandler); // Need to name the handler
                         }
-                        // Ensure draw card button is also disabled or handled
-                        if(drawCardButton) drawCardButton.disabled = true;
                     }
-                    updateGameStatusDisplay(); // Update button text and state
+                    // Update UI to reflect round end (e.g., enable "Start Next Round" button, disable category draw buttons)
+                    updateGameStatusDisplay(); 
                 }
             }, 1000);
+
+            // NOW that timerInterval is non-null (because setInterval has been called and returned an ID),
+            // call updateGameStatusDisplay to set the UI to "Round In Progress" state.
+            // This will disable "Start Round", disable timer input, and ENABLE category draw buttons.
+            updateGameStatusDisplay(); 
         });
     }
 
@@ -275,11 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialActiveButton = document.getElementById(`btn-${currentLanguage}`);
     if (initialActiveButton) initialActiveButton.classList.add('active');
     
-    timeLeft_seconds = roundTimerDuration_seconds; // Initialize timeLeft_seconds
-    updateGameStatusDisplay(); // Set up initial round text, button state, and timer display
-    // Do not draw a card initially until "Start Round" is clicked for the first time.
-    // So, clear placeholder card content if any
-    if (cardCategoryText) cardCategoryText.textContent = 'Game Ready';
-    if (cardDetailTextContainer) cardDetailTextContainer.innerHTML = '<p>Click "Start Round" to begin!</p>';
-    if (cardCategoryIcon) cardCategoryIcon.className = 'fas fa-hourglass-start fa-3x';
+    timeLeft_seconds = roundTimerDuration_seconds;
+    updateCardDisplayWithPlaceholder("Click 'Start Round' to begin!", "fas fa-hourglass-start fa-3x");
+    updateGameStatusDisplay(); 
+    // setCategoryDrawButtonsState(false); // This is handled by updateGameStatusDisplay now
 });
