@@ -83,7 +83,7 @@ const cardData = [
     }
   },
   {
-    id: 9, // Was first id:9
+    id: 9,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -103,7 +103,7 @@ const cardData = [
     }
   },
   {
-    id: 11, // Corrected ID from 9
+    id: 11,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -113,7 +113,7 @@ const cardData = [
     }
   },
   {
-    id: 12, // Corrected ID from 9
+    id: 12,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -123,7 +123,7 @@ const cardData = [
     }
   },
   {
-    id: 13, // Corrected ID from 9
+    id: 13,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -133,7 +133,7 @@ const cardData = [
     }
   },
   {
-    id: 14, // Corrected ID from 9
+    id: 14,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -143,7 +143,7 @@ const cardData = [
     }
   },
   {
-    id: 15, // Corrected ID from 9
+    id: 15,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -153,7 +153,7 @@ const cardData = [
     }
   },
   {
-    id: 16, // Corrected ID from 9
+    id: 16,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
@@ -163,7 +163,7 @@ const cardData = [
     }
   },
   {
-    id: 17, // Corrected ID from 9
+    id: 17,
     category: "punishment",
     icon: "fas fa-bomb",
     text: {
