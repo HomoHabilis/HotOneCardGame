@@ -43,7 +43,7 @@ const cardData = [
     text: {
       en: "Do your best impression of a celebrity for 1 minute.",
       it: "Fai la tua migliore imitazione di una celebrità per 1 minuto.",
-      fr: "Fais ta migliore imitation d'une célébrité pendant 1 minute."
+      fr: "Fais ta meilleure imitation d'une célébrité pendant 1 minute."
     }
   },
   {
@@ -87,72 +87,72 @@ const cardData = [
     id: 10,
     category: "question",
     text: {
-      en: "When did you and Jaleh first kiss?",
-      it: "Quando tu e Jaleh vi siete baciati per la prima volta?",
-      fr: "Quand as-tu embrassé Jaleh pour la première fois ?"
+      en: "When did you and your future wife first kiss?",
+      it: "Quando tu e la tua futura sposa vi siete baciati per la prima volta?",
+      fr: "Quand as-tu embrassé ta future épouse pour la première fois ?"
     }
   },
   {
     id: 11,
     category: "question",
     text: {
-      en: "Eat a spoonful of sauce.",
+      en: "Have you ever kissed someone in this group?",
       it: "Hai mai baciato qualcuno in questo gruppo?",
-      fr: "Mange une cuillerée de sauce."
+      fr: "As-tu déjà embrassé quelqu’un dans ce groupe ?"
     }
   },
   {
     id: 12,
     category: "dare",
     text: {
-      en: "Eat a spoonful of sauce.",
+      en: "Describe your first sexual experience using only your elbows.",
       it: "Descrivi la tua prima esperienza sessuale usando solo i tuoi gomiti",
-      fr: "Mange une cuillerée de sauce."
+      fr: "Décris ta première expérience sexuelle en utilisant uniquement tes coudes."
     }
   },
   {
     id: 13,
-    category: "punishment",
+    category: "question",
     text: {
-      en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
-      fr: "Mange une cuillerée de sauce."
+      en: "What does your future wife think is your worst flaw?",
+      it: "Quale secondo la tua futura moglie il tuo peggior diffetto?",
+      fr: "Quel est, selon ta future épouse, ton pire défaut ?"
     }
   },
   {
     id: 14,
-    category: "punishment",
+    category: "dare",
     text: {
-      en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
-      fr: "Mange une cuillerée de sauce."
+      en: "Sing a love song with your mouth on fire.",
+      it: "Canta una canzone d’amore con la bocca in fiamme",
+      fr: "Chante une chanson d’amour avec la bouche en feu."
     }
   },
   {
     id: 15,
-    category: "punishment",
+    category: "dare",
     text: {
-      en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
-      fr: "Mange une cuillerée de sauce."
+      en: "Record a video message for the bride right after eating a double dose of the hottest sauce.",
+      it: "Messaggio per la sposa registrato in video subito dopo aver mangiato una doppia dose della morte",
+      fr: "Enregistre un message vidéo pour la mariée juste après avoir mangé une double dose de la sauce de la mort."
     }
   },
   {
     id: 16,
-    category: "punishment",
+    category: "question",
     text: {
-      en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
-      fr: "Mange une cuillerée de sauce."
+      en: "Who would you NOT invite to the wedding if you had the choice?",
+      it: "Chi NON inviteresti al matrimonio, se potessi?",
+      fr: "Qui n’inviterais-tu PAS au mariage si tu avais le choix ?"
     }
   },
   {
     id: 17,
-    category: "punishment",
+    category: "question",
     text: {
-      en: "Eat a spoonful of sauce.",
-      it: "Mangia un cucchiaio di salsa.",
-      fr: "Mange une cuillerée de sauce."
+      en: "Tell us the most embarrassing moment you’ve had with one of us.",
+      it: "Racconta il momento più imbarazzante vissuto con uno di noi",
+      fr: "Raconte le moment le plus embarrassant vécu avec l’un d’entre nous."
     }
   }
 ];
