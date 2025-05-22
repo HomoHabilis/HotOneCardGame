@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeLeftDisplay = document.getElementById('time-left-display');
 
     // Audio Elements
+    const NextRoundSound = document.getElementById('round-start-sound');
     const roundEndSound = document.getElementById('round-end-sound');
     const gameOverSound = document.getElementById('game-over-sound'); // Will be used in a future step
 
@@ -199,7 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // "Start Round" Button Event Listener (formerly Next Round)
     if (nextRoundButton) {
         nextRoundButton.addEventListener('click', () => {
-            if (timerInterval !== null) return; // Timer already running
+            if (timerInterval !== null)
+            {
+                return; // Timer already running
+            }
+            else
+            {
+                if(NextRoundSound) NextRoundSound.play().catch(e => console.error("Error playing sound:", e));
+            }
 
             // If previous round ended and we are starting the next one
             if (timeLeft_seconds === 0 && currentRound < MAX_ROUNDS) {
