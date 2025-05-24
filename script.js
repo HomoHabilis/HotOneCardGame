@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             roundTimerDuration_seconds = (userDurationMinutes > 0 ? userDurationMinutes : 3) * 60;
             timeLeft_seconds = roundTimerDuration_seconds; // Reset time for the new/current round
 
-            drawnCardIds = []; 
+            // drawnCardIds = []; 
             updateCardDisplayWithPlaceholder("Select a card category to draw.", "fas fa-dice-d20");
             
             // Update timer display immediately to show full time
