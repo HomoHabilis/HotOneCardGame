@@ -262,6 +262,24 @@ const cardData = [
       it: "Sfila attorno al tavolo come in una passerella con una musica di sottofondo (battuta sul tavolo).",
       fr: "Défile autour de la table comme sur un podium avec une musique de fond (tapée sur la table)."
     }
+  },
+  {
+    id: 30,
+    category: "question",
+    text: {
+      en: "What is Jaleh's worst phobia?",
+      it: "Qual'è la peggiore fobbia di Jaleh?",
+      fr: "Quelle est la pire phobie de Jaleh ?"
+    }
+  },
+  {
+    id: 31,
+    category: "question",
+    text: {
+      en: "What is Jaleh's dream job?",
+      it: "Qual'è il lavoro da sogno di Jaleh?",
+      fr: "Quel est le métier de rêve de Jaleh ?"
+    }
   }
 ];
 
